@@ -98,6 +98,18 @@ type Job struct {
 	// reports ErrNoEngineSource if it is not there.
 	LOWLSource string
 
+	// Engine names a LOWL source built into this binary, as Engines() lists
+	// them — "ml1ajb" rather than a path. An empty string means none was
+	// chosen.
+	//
+	// The two are separate fields because they are separate questions, and a
+	// caller may answer either, neither, or both. LOWLSource wins if both are
+	// set: a path is the more specific instruction, and it is the one a user
+	// reaches for to run something the binary was not built with. With
+	// neither, Run searches the file system exactly as it did before engines
+	// could be embedded, which is what keeps cmd/ml1's behaviour unchanged.
+	Engine string
+
 	// DebugWidth is the column at which lines written to Debug are hard
 	// wrapped, mid word, the way the reference implementation does it.
 	// NeverWrap, the zero value, emits each line whole.

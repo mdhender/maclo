@@ -34,7 +34,7 @@ const runCycleLimit = 500_000_000
 
 // runLOWL performs the job on a machine assembled from the LOWL source.
 func runLOWL(job Job) (Result, error) {
-	source, err := readSource(job.LOWLSource)
+	source, err := readSource(job.LOWLSource, job.Engine)
 	if err != nil {
 		return Result{Fatal: true}, err
 	}
@@ -162,7 +162,10 @@ func assemble(source []byte) (*vm.VM, error) {
 
 // readSource loads the LOWL source, from the path the job names or from the
 // places it is usually unpacked into.
-func readSource(name string) ([]byte, error) {
+func readSource(name, engine string) ([]byte, error) {
+	// A path is the more specific instruction of the two, and it is the one a
+	// user reaches for to run something this binary was not built with, so it
+	// is answered first.
 	if name != "" {
 		source, err := os.ReadFile(name)
 		if err != nil {
@@ -170,6 +173,15 @@ func readSource(name string) ([]byte, error) {
 		}
 		return source, nil
 	}
+	if engine != "" {
+		return engineSource(engine)
+	}
+	// Neither was given, so the file system is searched exactly as it was
+	// before anything could be embedded. The embedded engines are deliberately
+	// *not* consulted here: cmd/ml1 leaves both fields empty and has to keep
+	// behaving the way its operating instructions say it does, whatever the
+	// binary happens to have been built with. Choosing an engine is maclo's
+	// job, and it does it by filling Engine in.
 	tried := EnginePaths()
 	for _, candidate := range tried {
 		if source, err := os.ReadFile(candidate); err == nil {

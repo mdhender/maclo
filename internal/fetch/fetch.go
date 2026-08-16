@@ -249,6 +249,58 @@ not in a repository at all`, abs, d)
 	}
 }
 
+// InstallEngines copies every .lwl file in src into dst and reports how many
+// it wrote.
+//
+// dst is the directory //go:embed compiles into the binary, which makes this
+// the step that turns fetched material into a build input rather than a file
+// found at run time. It is a copy rather than the unpack writing there
+// directly because the two directories mean different things: src holds the
+// archive as upstream published it, digests and all, and dst holds only what
+// is meant to end up inside a program. Copying the archive wholesale would
+// build upstream's MANIFEST into the binary as well.
+//
+// dst is held to the same rule as any other destination: it must be somewhere
+// git will not offer the result for commit.
+func InstallEngines(src, dst string, opt Options) (int, error) {
+	if opt.VerifyOnly {
+		return 0, nil
+	}
+	if err := requireUntracked(dst); err != nil {
+		return 0, err
+	}
+
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", src, err)
+	}
+	var names []string
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".lwl") {
+			names = append(names, e.Name())
+		}
+	}
+	if len(names) == 0 {
+		return 0, fmt.Errorf("%s: no .lwl files to install", src)
+	}
+	sortStrings(names)
+
+	if err := os.MkdirAll(dst, 0755); err != nil {
+		return 0, err
+	}
+	for _, name := range names {
+		b, err := os.ReadFile(filepath.Join(src, name))
+		if err != nil {
+			return 0, err
+		}
+		if err := os.WriteFile(filepath.Join(dst, name), b, 0644); err != nil {
+			return 0, err
+		}
+		progressf(opt.Progress, "engine: %s in %s\n", name, dst)
+	}
+	return len(names), nil
+}
+
 // Describe reports what a manifest entry for an archive file would look like,
 // for a human to review and paste in. It never edits manifest.json, because
 // the whole point of the digests is that a change upstream needs a person to

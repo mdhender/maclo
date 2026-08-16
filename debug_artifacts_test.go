@@ -96,6 +96,7 @@ var writeSites = map[string]string{
 	"pkg/lowl/vm.(*VM).Disassemble":           "the file its caller names",
 	"internal/fetch.(*Archive).Install":       "the engine and the test suite, into the directory its caller names",
 	"internal/fetch.(*Archive).bytes":         "the archive cache, at Options.Cache",
+	"internal/fetch.InstallEngines":           "the LOWL sources //go:embed compiles in, into the directory its caller names",
 }
 
 // fileCreators are the calls that can put a file on the disk. os.Open is not

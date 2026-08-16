@@ -52,16 +52,17 @@ func main() {
 		verifyOnly = flag.Bool("verify", false, "check what is on disk and never use the network")
 		force      = flag.Bool("force", false, "download again even when the corpus already verifies")
 		printFor   = flag.String("print-manifest", "", "print a manifest entry for the named archive file and exit")
+		engines    = flag.String("engines", "", "where to put the LOWL sources that get embedded (default: pkg/ml1/engines under the module root)")
 	)
 	flag.Parse()
 
-	if err := realMain(*dest, *cache, *corpus, *printFor, *verifyOnly, *force); err != nil {
+	if err := realMain(*dest, *cache, *corpus, *printFor, *engines, *verifyOnly, *force); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "fetchtestdata: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func realMain(dest, cache, corpus, printFor string, verifyOnly, force bool) error {
+func realMain(dest, cache, corpus, printFor, engines string, verifyOnly, force bool) error {
 	// before the manifest is loaded, so that this can be used to bootstrap a
 	// manifest that does not exist yet or no longer parses
 	if printFor != "" {
@@ -94,8 +95,22 @@ func realMain(dest, cache, corpus, printFor string, verifyOnly, force bool) erro
 		UserAgent:  "fetchtestdata (github.com/maloquacious/ml_i)",
 	}
 	for _, a := range chosen {
-		if err := a.Install(a.Target(root, dest), opt); err != nil {
+		target := a.Target(root, dest)
+		if err := a.Install(target, opt); err != nil {
 			return err
+		}
+		// The engine is not only test data. Copying it into the embed
+		// directory is what lets it be compiled into cmd/maclo, and doing it
+		// here rather than leaving it to the reader is the difference between
+		// a checkout that builds a working processor and one that builds an
+		// empty one.
+		if a.Name == fetch.EngineCorpus {
+			if engines == "" {
+				engines = filepath.Join(root, "pkg", "ml1", "engines")
+			}
+			if _, err := fetch.InstallEngines(target, engines, opt); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
