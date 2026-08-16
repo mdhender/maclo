@@ -20,10 +20,14 @@ go test ./...
 go test ./pkg/lowl/vm -run TestVM -v     # the VM opcode tests (one big table-free test func)
 go run ./cmd/lasm --source path/to/file.lowl
 go run ./cmd/lasm --source file.lowl --test-scanner   # stop after scanning
+go run ./cmd/fetchtestdata               # the engine and the test corpora, into a checkout
+go run ./cmd/ml1 --engine                # where the LOWL source is looked for, and what answers
+go run ./cmd/ml1 --fetch-engine          # install the engine for a user with no checkout
 ```
 
-Flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, courtesy of
-`peterbourgon/ff`.
+`lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, courtesy of
+`peterbourgon/ff`. `ml1`'s own options are hand-parsed, because the operating instructions let
+options and input files interleave; the long `--` options are all extensions.
 
 ## Golden tests
 
@@ -114,10 +118,12 @@ Two tests keep it that way, and a new stage has to satisfy both. `TestRunWritesN
 (`pkg/ml1/silence_test.go`) runs the engine from an empty directory with the process's own streams
 redirected, and requires the directory to still be empty and both streams silent.
 `TestDebugArtifactsAreDeclared` (`debug_artifacts_test.go`, at the top of the repository) reads the
-source: only the six functions in its `writeSites` table may call `os.Create`/`os.WriteFile`/
-`os.OpenFile`/`os.Mkdir*` under `pkg`, nothing under `pkg` may touch `os.Stdout`/`os.Stderr`/
-`os.Stdin`, and every artifact name written as a literal must be in its table **and** in
-`.gitignore`. Adding an artifact means adding it in all three places.
+source under `pkg`, `cmd` and `internal`: only the functions in its `writeSites` table may call
+`os.Create`/`os.WriteFile`/`os.OpenFile`/`os.Mkdir*` outside `cmd`, nothing outside `cmd` may touch
+`os.Stdout`/`os.Stderr`/`os.Stdin`, and every artifact name written as a literal must be in its
+table **and** in `.gitignore`. Adding an artifact means adding it in all three places. `internal` is
+scanned on the same terms as `pkg` on purpose — a package that only had to move one directory to
+escape the rule would not be covered by it.
 
 ## Opcodes are the spine
 
@@ -174,12 +180,21 @@ runs LOWLTEST L4A from `.downloads/lowltest/ltestl4a.lwl`. That file cannot be c
 test **skips** when it is absent — `go run ./cmd/fetchtestdata -corpus lowltest` turns it on. If you
 touch opcode execution, make sure this one ran rather than skipped.
 
-## pkg/mlvm
+## Where the engine comes from
 
-A separate, newer VM (`git log` calls it "started new vm") with no connection to `pkg/lowl` yet.
-It uses Lua-style fixed-width 32-bit instruction encoding — `IABC`/`IABx`/`IAsBx` with a bias on the
-signed field. `pkg/mlvm/vm.go` is still an empty struct. Only the encode/decode functions exist and
-they are the only fully-tested code in the repo.
+`pkg/ml1/engine.go` owns the question, and it is the only place that answers it. `EnginePaths()`
+returns, in order: `$ML1_LOWL_SOURCE`, then `$ML1_HOME` or the per-user directory (macOS and Windows
+follow `os.UserConfigDir`, elsewhere `$XDG_DATA_HOME/ml1`), then `.downloads/lowlml1/ml1ajb.lwl`
+relative to the working directory. `Job.LOWLSource` overrides all of it. `cmd/ml1` deliberately does
+**not** read the environment itself, so that a program embedding the library finds the same file the
+command does.
+
+`internal/fetch` does the downloading and digest checking for both commands: `cmd/fetchtestdata`
+populates a checkout, and `ml1 --fetch-engine` installs the engine alone for a user who has no
+checkout. It writes only where its caller names, prints nothing (progress goes to
+`Options.Progress`), and refuses any destination inside a git working tree that is not covered by a
+`.gitignore` whose first line is `*` — a directory in no repository at all is fine, which is what
+the per-user install relies on.
 
 ## Repository conventions
 

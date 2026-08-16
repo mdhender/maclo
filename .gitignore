@@ -20,6 +20,7 @@
 .idea/
 lua/
 /fetchtestdata
+/lasm
 /ml1
 notes.txt
 site/
