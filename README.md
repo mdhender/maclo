@@ -29,7 +29,7 @@ better goes.
 ```sh
 git clone https://github.com/mdhender/maclo && cd maclo
 go run ./cmd/fetchtestdata     # the engine and the test corpora; both gitignored
-go build ./cmd/maclo ./cmd/ml1
+go build ./cmd/maclo           # and ./cmd/ml1, if you want that one too
 ```
 
 The fetch writes every published LOWL source of ML/I — AJB, AIH and AIG — into
