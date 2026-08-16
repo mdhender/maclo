@@ -2,13 +2,41 @@
 // Copyright (c) 2023 Michael D Henderson.
 // All rights reserved.
 
-package main
+// Package fetch downloads and verifies the material from ml1.org.uk that this
+// repository may not carry: the ML/I test suite, and the LOWL source of ML/I
+// itself, which is the processor.
+//
+// Neither is here on purpose. Both are copyright P.J. Brown and R.D. Eager,
+// and the licence forbids making a machine readable copy generally accessible.
+// What is committed instead is manifest.json, which records the URL, the sizes,
+// and the SHA-256 of every file: facts about them rather than copies of them.
+//
+// Two commands use this. cmd/fetchtestdata brings a developer's checkout up to
+// date, and cmd/ml1 fetches the engine alone into a per-user directory so that
+// an installed binary has something to run. They differ only in what they ask
+// for and where they put it, which is why the machinery is here rather than in
+// either of them.
+//
+// Nothing in this package writes to the process's streams. Progress goes to
+// the io.Writer in Options, and everything else comes back as a value or an
+// error, because a package that printed would be unusable from the other one.
+package fetch
 
 import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+)
+
+const (
+	// EngineCorpus is the manifest entry holding the LOWL source of ML/I.
+	// Fetching it is what turns a checkout, or an installed binary, from
+	// something that reports ErrNoEngineSource into a working processor.
+	EngineCorpus = "lowlml1"
+
+	// EngineFile is the member of that archive which is the processor.
+	EngineFile = "ml1ajb.lwl"
 )
 
 // manifest.json records where each upstream archive comes from and what it
@@ -62,9 +90,9 @@ type Member struct {
 	SHA256 string `json:"sha256"`
 }
 
-// loadManifest parses the embedded manifest and checks the parts of it that a
-// typo could break.
-func loadManifest() (*Manifest, error) {
+// Load parses the embedded manifest and checks the parts of it that a typo
+// could break.
+func Load() (*Manifest, error) {
 	var m Manifest
 	if err := json.Unmarshal(manifestJSON, &m); err != nil {
 		return nil, fmt.Errorf("manifest.json: %w", err)
@@ -108,21 +136,46 @@ func loadManifest() (*Manifest, error) {
 	return &m, nil
 }
 
-// target is where this archive's files belong: under the module root when the
+// Target is where this archive's files belong: under the module root when the
 // entry names its own directory, and under the corpora destination otherwise.
-func (a *Archive) target(root, dest string) string {
+func (a *Archive) Target(root, dest string) string {
 	if a.Under != "" {
 		return filepath.Join(root, filepath.FromSlash(a.Under), a.Dest)
 	}
 	return filepath.Join(dest, a.Dest)
 }
 
-// find returns the archive with the given name.
-func (m *Manifest) find(name string) (*Archive, error) {
+// Find returns the archive with the given name.
+func (m *Manifest) Find(name string) (*Archive, error) {
 	for i := range m.Corpora {
 		if m.Corpora[i].Name == name {
 			return &m.Corpora[i], nil
 		}
 	}
 	return nil, fmt.Errorf("no corpus named %q in the manifest", name)
+}
+
+// Select resolves the name of a set of archives: one corpus by name, "all",
+// or "required", which is everything not marked optional.
+func (m *Manifest) Select(which string) ([]*Archive, error) {
+	var chosen []*Archive
+	switch which {
+	case "all":
+		for i := range m.Corpora {
+			chosen = append(chosen, &m.Corpora[i])
+		}
+	case "required", "":
+		for i := range m.Corpora {
+			if !m.Corpora[i].Optional {
+				chosen = append(chosen, &m.Corpora[i])
+			}
+		}
+	default:
+		a, err := m.Find(which)
+		if err != nil {
+			return nil, err
+		}
+		chosen = append(chosen, a)
+	}
+	return chosen, nil
 }

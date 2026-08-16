@@ -8,15 +8,20 @@
 //
 // Neither is in this repository on purpose. Both are copyright P.J. Brown and
 // R.D. Eager, and the licence forbids making a machine readable copy generally
-// accessible. What is committed instead is manifest.json, which records the
-// URL, the sizes, and the SHA-256 of every file: facts about them rather than
-// copies of them. Everything this command writes is verified against those
-// digests, so a corrupt download or a change upstream is reported rather than
-// absorbed, and it will only write into a directory git ignores.
+// accessible. What is committed instead is internal/fetch/manifest.json, which
+// records the URL, the sizes, and the SHA-256 of every file: facts about them
+// rather than copies of them. Everything this command writes is verified
+// against those digests, so a corrupt download or a change upstream is
+// reported rather than absorbed, and it will only write into a directory git
+// ignores.
 //
 // The two land in different places, because they are different kinds of thing.
 // The suite is test data and goes under testdata/upstream; the LOWL source is
 // the engine and goes where the engine looks for it, in .downloads.
+//
+// This is the developer's command, and it populates a checkout. An installed
+// ml1 has no checkout to populate, so it fetches the engine alone into a
+// per-user directory with `ml1 --fetch-engine`; both go through internal/fetch.
 //
 // Usage:
 //
@@ -31,16 +36,12 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
-	"io"
-	"io/fs"
-	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
+
+	"github.com/maloquacious/ml_i/internal/fetch"
 )
 
 func main() {
@@ -67,7 +68,7 @@ func realMain(dest, cache, corpus, printFor string, verifyOnly, force bool) erro
 		return printManifest(printFor)
 	}
 
-	m, err := loadManifest()
+	m, err := fetch.Load()
 	if err != nil {
 		return err
 	}
@@ -80,215 +81,24 @@ func realMain(dest, cache, corpus, printFor string, verifyOnly, force bool) erro
 		cache = filepath.Join(root, ".downloads", "cache")
 	}
 
-	var chosen []*Archive
-	switch corpus {
-	case "all":
-		for i := range m.Corpora {
-			chosen = append(chosen, &m.Corpora[i])
-		}
-	case "required", "":
-		for i := range m.Corpora {
-			if !m.Corpora[i].Optional {
-				chosen = append(chosen, &m.Corpora[i])
-			}
-		}
-	default:
-		a, err := m.find(corpus)
-		if err != nil {
-			return err
-		}
-		chosen = append(chosen, a)
+	chosen, err := m.Select(corpus)
+	if err != nil {
+		return err
 	}
 
+	opt := fetch.Options{
+		Cache:      cache,
+		VerifyOnly: verifyOnly,
+		Force:      force,
+		Progress:   os.Stdout,
+		UserAgent:  "fetchtestdata (github.com/maloquacious/ml_i)",
+	}
 	for _, a := range chosen {
-		if err := handle(a, a.target(root, dest), cache, verifyOnly, force); err != nil {
+		if err := a.Install(a.Target(root, dest), opt); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// handle brings one corpus up to date.
-func handle(a *Archive, target, cache string, verifyOnly, force bool) error {
-	// Refuse to write anywhere git would track the result. The upstream
-	// licence makes this the one mistake that must be impossible to make by
-	// accident, so it is enforced here rather than left to a convention, and
-	// per archive rather than once, because they do not all land in the same
-	// place.
-	if err := requireIgnored(target); err != nil {
-		return err
-	}
-
-	// the cheap path first: if what is already on disk matches the manifest
-	// there is nothing to do, and nothing touches the network
-	if !force {
-		if files, err := readDir(target); err == nil {
-			if err := verify(a, files); err == nil {
-				fmt.Printf("%s: up to date (%d files)\n", a.Name, len(files))
-				return nil
-			} else if verifyOnly {
-				return err
-			}
-		} else if verifyOnly {
-			return fmt.Errorf("%s: %w", a.Name, err)
-		}
-	} else if verifyOnly {
-		return errors.New("-force and -verify cannot be used together")
-	}
-
-	data, err := archiveBytes(a, cache, verifyOnly)
-	if err != nil {
-		return err
-	}
-
-	files, err := unpack(a.Format, data)
-	if err != nil {
-		return fmt.Errorf("%s: %w", a.Name, err)
-	}
-	if err := verify(a, files); err != nil {
-		return err
-	}
-
-	// only now, with every member checked, is anything written
-	if err := os.MkdirAll(target, 0755); err != nil {
-		return err
-	}
-	for name, b := range files {
-		out := filepath.Join(target, filepath.FromSlash(name))
-		if err := os.MkdirAll(filepath.Dir(out), 0755); err != nil {
-			return err
-		}
-		if err := os.WriteFile(out, b, 0644); err != nil {
-			return err
-		}
-	}
-	fmt.Printf("%s: %d files in %s\n", a.Name, len(files), target)
-	return nil
-}
-
-// archiveBytes returns the archive, from the cache when its hash matches and
-// from the network otherwise. Nothing unverified is ever returned.
-func archiveBytes(a *Archive, cache string, offline bool) ([]byte, error) {
-	cached := filepath.Join(cache, filepath.Base(a.URL))
-	if b, err := os.ReadFile(cached); err == nil {
-		if sum := digest(b); sum == a.SHA256 {
-			return b, nil
-		}
-		// a stale or damaged cache entry is not an error; it is just ignored
-	}
-	if offline {
-		return nil, fmt.Errorf("%s: not in the cache at %s and -verify forbids the network", a.Name, cached)
-	}
-
-	b, err := download(a.URL)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", a.Name, err)
-	}
-	if sum := digest(b); sum != a.SHA256 {
-		return nil, fmt.Errorf(`%s: the archive is not what the manifest describes
-  url      %s
-  expected %s
-  actual   %s
-Upstream may have changed, or the download may be damaged. Nothing has been
-written. Do not edit manifest.json to make this pass until a human has looked
-at what changed; see docs/how-to/fetch-the-upstream-sources.md`,
-			a.Name, a.URL, a.SHA256, sum)
-	}
-
-	if err := os.MkdirAll(cache, 0755); err != nil {
-		return nil, err
-	}
-	// written only after the hash matched, so the cache never holds anything
-	// unverified
-	if err := os.WriteFile(cached, b, 0644); err != nil {
-		return nil, err
-	}
-	return b, nil
-}
-
-func download(url string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("User-Agent", "fetchtestdata (github.com/maloquacious/ml_i)")
-
-	client := &http.Client{Timeout: 60 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %s", url, resp.Status)
-	}
-	b, err := io.ReadAll(io.LimitReader(resp.Body, maxArchive+1))
-	if err != nil {
-		return nil, err
-	}
-	if len(b) > maxArchive {
-		return nil, fmt.Errorf("%s: larger than the %d byte limit", url, maxArchive)
-	}
-	return b, nil
-}
-
-// readDir reads an extracted corpus back into the same shape unpack produces,
-// so that one verify serves both.
-func readDir(dir string) (map[string][]byte, error) {
-	files := make(map[string][]byte)
-	err := filepath.Walk(dir, func(p string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() || strings.HasPrefix(info.Name(), ".") {
-			return nil
-		}
-		rel, err := filepath.Rel(dir, p)
-		if err != nil {
-			return err
-		}
-		b, err := os.ReadFile(p)
-		if err != nil {
-			return err
-		}
-		files[filepath.ToSlash(rel)] = b
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-// requireIgnored refuses a destination that git would track.
-//
-// It walks up from dir looking for a .gitignore whose first line is *, which
-// is the pattern this repository uses for every directory holding material
-// that may not be redistributed.
-func requireIgnored(dir string) error {
-	abs, err := filepath.Abs(dir)
-	if err != nil {
-		return err
-	}
-	for d := abs; ; {
-		if b, err := os.ReadFile(filepath.Join(d, ".gitignore")); err == nil {
-			first := b
-			if i := strings.IndexByte(string(b), '\n'); i >= 0 {
-				first = b[:i]
-			}
-			if strings.TrimSpace(string(first)) == "*" {
-				return nil
-			}
-		}
-		parent := filepath.Dir(d)
-		if parent == d {
-			break
-		}
-		d = parent
-	}
-	return fmt.Errorf(`%s is not inside a directory that git ignores
-The upstream suite may not be committed, so this command will only write into
-a directory covered by a .gitignore whose first line is *`, abs)
 }
 
 // printManifest reports what a manifest entry for an archive file would look
@@ -300,33 +110,10 @@ func printManifest(name string) error {
 	if err != nil {
 		return err
 	}
-	format := "tar.gz"
-	if strings.HasSuffix(name, ".zip") {
-		format = "zip"
-	}
-	files, err := unpack(format, b)
+	a, err := fetch.Describe(name, b)
 	if err != nil {
 		return err
 	}
-
-	var names []string
-	for n := range files {
-		names = append(names, n)
-	}
-	sortStrings(names)
-
-	a := Archive{
-		Name:   strings.TrimSuffix(strings.TrimSuffix(filepath.Base(name), ".tar.gz"), ".zip"),
-		URL:    "https://www.ml1.org.uk/" + map[string]string{"tar.gz": "tgz", "zip": "zip"}[format] + "/" + filepath.Base(name),
-		Format: format,
-		SHA256: digest(b),
-		Size:   int64(len(b)),
-		Dest:   strings.TrimSuffix(strings.TrimSuffix(filepath.Base(name), ".tar.gz"), ".zip"),
-	}
-	for _, n := range names {
-		a.Files = append(a.Files, Member{Name: n, Size: int64(len(files[n])), SHA256: digest(files[n])})
-	}
-
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("    ", "  ")
 	return enc.Encode(a)

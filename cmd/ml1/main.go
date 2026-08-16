@@ -42,19 +42,22 @@ const (
 	// processor is that source rather than a translation of it, and its
 	// licence keeps it out of this repository, so where it lives is a
 	// property of the machine rather than of the program.
-	sourceEnv = "ML1_LOWL_SOURCE"
+	sourceEnv = ml1.EngineEnv
 )
 
 // config holds the options and file names taken from the command line.
 type config struct {
-	version    bool     // true if -v was given
-	workspace  int      // words of workspace, from -w
-	debugWidth int      // wrap column for the debugging file, from -c; 0 never wraps
-	listing    string   // from -l; "" means no listing is produced
-	debug      string   // from -d; "" means the standard error stream
-	source     string   // from -s; "" falls back to the environment
-	output     []string // from -o; empty means the standard output
-	input      []string // everything else; empty means the standard input
+	version     bool     // true if -v was given
+	help        bool     // true if --help was given
+	fetchEngine bool     // true if --fetch-engine was given
+	showEngine  bool     // true if --engine was given
+	workspace   int      // words of workspace, from -w
+	debugWidth  int      // wrap column for the debugging file, from -c; 0 never wraps
+	listing     string   // from -l; "" means no listing is produced
+	debug       string   // from -d; "" means the standard error stream
+	source      string   // from -s; "" falls back to the search in pkg/ml1
+	output      []string // from -o; empty means the standard output
+	input       []string // everything else; empty means the standard input
 }
 
 // go run ./cmd/ml1 -v sets18.ml1 foo.ml1 -o foo.tmp_out -d foo.tmp_err
@@ -74,6 +77,21 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		_, _ = fmt.Fprintf(stderr, "ml1: %v\n", err)
 		_, _ = fmt.Fprint(stderr, usage)
 		return 1
+	}
+
+	// The three extensions that do something instead of processing text, in
+	// the order a first-time user meets them. Each one answers and stops: none
+	// of them is part of the operating instructions, so none of them has a
+	// defined interaction with an input file, and doing both would have to
+	// invent one.
+	switch {
+	case cfg.help:
+		_, _ = fmt.Fprint(stdout, usage)
+		return 0
+	case cfg.showEngine:
+		return showEngine(stdout)
+	case cfg.fetchEngine:
+		return fetchEngine(stdout, stderr)
 	}
 
 	// -v only asks for the version number to be printed; the operating
@@ -106,7 +124,8 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	case runErr == nil:
 	case errors.Is(runErr, ml1.ErrNoEngineSource):
 		_, _ = fmt.Fprintf(stderr, "ml1: %v\n", runErr)
-		_, _ = fmt.Fprintf(stderr, "ml1: name it with -s, or set %s\n", sourceEnv)
+		_, _ = fmt.Fprintf(stderr, "ml1: run `ml1 --fetch-engine` to install it,"+
+			" or name one with -s or $%s\n", sourceEnv)
 		return 1
 	case errors.Is(runErr, ml1.ErrAborted), errors.Is(runErr, ml1.ErrProcessErrors):
 		// expected outcomes; the diagnostics are already on the debugging
@@ -164,10 +183,12 @@ func (cfg *config) job(stdin io.Reader, stdout, stderr io.Writer) (ml1.Job, func
 		return b, nil
 	}
 
+	// -s names the engine outright. Leaving it empty is not a failure: it hands
+	// the question to ml1.EnginePaths, which knows $ML1_LOWL_SOURCE, the
+	// per-user directory --fetch-engine writes to, and the layout of a
+	// developer's checkout. Resolving it in one place is what keeps the command
+	// and a program embedding the library finding the same file.
 	job := ml1.Job{Workspace: cfg.workspace, DebugWidth: cfg.debugWidth, LOWLSource: cfg.source}
-	if job.LOWLSource == "" {
-		job.LOWLSource = os.Getenv(sourceEnv)
-	}
 
 	// no input file at all means the standard input, and so does the name -
 	names := cfg.input
@@ -256,12 +277,24 @@ const usage = `usage: ml1 [-v] [-w words] [-c columns] [-l file] [-d file] [-o f
            this option is an extension, not part of the operating instructions
   -l file  nominate file as the listing file (default: no listing)
   -d file  nominate file as the debugging file (default: standard error)
-  -s file  the LOWL source of ML/I to run; overrides $ML1_LOWL_SOURCE
+  -s file  the LOWL source of ML/I to run; overrides the search below
            this option is an extension, not part of the operating instructions
   -o file  nominate file as an output file, at most 4 (default: standard output)
   file     input file, at most 5 (default: standard input)
   The name - means the standard output for -l, -d, and -o, and the standard
   input for an input file. Upper case option letters are also accepted.
+
+The long options are extensions too. Each one answers and stops:
+  --help          print this text
+  --engine        report where the LOWL source of ML/I is looked for
+  --fetch-engine  download it from ml1.org.uk into the per-user directory
+
+ML/I is distributed as LOWL source and this program runs that source rather
+than a translation of it, so the processor is a file that has to be on the
+machine. Its licence forbids redistributing a machine readable copy, which is
+why it is neither built in nor shipped alongside. It is looked for in
+$ML1_LOWL_SOURCE, then in $ML1_HOME or the per-user directory, then in a
+developer checkout; --engine prints the list in full.
 `
 
 // parseArgs parses the command line arguments the original ML/I accepts.
@@ -275,6 +308,25 @@ func parseArgs(args []string) (*config, error) {
 
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
+
+		// The long options are all extensions, and all of them do something
+		// other than process text. They are spelled with two dashes so that
+		// they cannot collide with the single letters of the operating
+		// instructions, and taken first so that the letter parser below never
+		// sees an argument beginning --.
+		if strings.HasPrefix(arg, "--") {
+			switch arg {
+			case "--help":
+				cfg.help = true
+			case "--engine":
+				cfg.showEngine = true
+			case "--fetch-engine":
+				cfg.fetchEngine = true
+			default:
+				return nil, fmt.Errorf("unknown option: %s", arg)
+			}
+			continue
+		}
 
 		// a lone - is an input file (the standard input), not an option
 		if len(arg) < 2 || !strings.HasPrefix(arg, "-") {

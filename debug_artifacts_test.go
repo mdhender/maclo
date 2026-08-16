@@ -37,9 +37,11 @@ import (
 //
 // The three rules, and why each is worth a test rather than a habit:
 //
-//  1. Only the functions in writeSites may create a file, and all of them are
-//     in pkg/lowl. Anything under pkg is a library, and a library that writes a
-//     file nobody asked for is the defect this whole file exists for.
+//  1. Only the functions in writeSites may create a file. Anything under pkg
+//     or internal is a library, and a library that writes a file nobody asked
+//     for is the defect this whole file exists for. internal is held to the
+//     same rule as pkg on purpose: a package that only had to move one
+//     directory to escape the check would not be checked at all.
 //  2. A file name written as a literal in the source is a debug artifact by
 //     definition — a real output file is named by the caller — so every one of
 //     them is listed here, with what writes it and what turns it on.
@@ -68,14 +70,23 @@ var debugArtifacts = map[string]string{
 	"vm_stdmsg.txt":      "lasm itself, holding what the machine wrote to the messages stream",
 }
 
-// writeSites are the functions under pkg that may create a file, mapped to the
-// reason they are allowed to.
+// writeSites are the functions under pkg and internal that may create a file,
+// mapped to the reason they are allowed to.
 //
-// Every one of them is reached only from cmd/lasm. The library entry points
-// beside them — cst.ParseBuffer, assembler.Options{} with Listings unset, a nil
-// vm.Streams.Trace — are what ml1.Run uses instead, and pkg/ml1 is absent from
-// this table on purpose: the processor writes to the io.Writers its Job names
-// and to nothing else.
+// The pkg/lowl entries are all reached only from cmd/lasm. The library entry
+// points beside them — cst.ParseBuffer, assembler.Options{} with Listings
+// unset, a nil vm.Streams.Trace — are what ml1.Run uses instead, and pkg/ml1 is
+// absent from this table on purpose: the processor writes to the io.Writers its
+// Job names and to nothing else.
+//
+// internal/fetch is the one entry of a different kind, and it is worth being
+// explicit about why it is not a violation. The rule this file enforces is
+// against a library writing a file *nobody asked for*; installing the engine is
+// the whole of what its caller asked for, and the directory is named by that
+// caller rather than chosen here. What still applies to it, and is checked
+// below like anything else, is that it must not print: cmd/ml1 runs the
+// processor on the standard output, so a fetcher reaching for os.Stdout would
+// corrupt the very stream the program exists to write.
 var writeSites = map[string]string{
 	"pkg/lowl/scanner.(*Scanner).TestBuffer":  "scanner_buffer.txt, for lasm --test-buffer",
 	"pkg/lowl/scanner.(*Scanner).TestScanner": "scanner_tokens.txt, for lasm --test-scanner",
@@ -83,6 +94,8 @@ var writeSites = map[string]string{
 	"pkg/lowl/assembler.Listing":              "the file Assemble names, asm_listing.txt",
 	"pkg/lowl/assembler.Assemble":             "asm_symtab.txt, under Options.Listings",
 	"pkg/lowl/vm.(*VM).Disassemble":           "the file its caller names",
+	"internal/fetch.(*Archive).Install":       "the engine and the test suite, into the directory its caller names",
+	"internal/fetch.(*Archive).bytes":         "the archive cache, at Options.Cache",
 }
 
 // fileCreators are the calls that can put a file on the disk. os.Open is not
@@ -96,8 +109,8 @@ var fileCreators = map[string]bool{
 }
 
 // processStreams are the writers a library must not reach for. Code under pkg
-// takes an io.Writer instead; there is no allowlist for these because nothing
-// under pkg has ever needed one.
+// and internal takes an io.Writer instead; there is no allowlist for these
+// because nothing outside cmd has ever needed one.
 var processStreams = map[string]bool{
 	"os.Stdout": true,
 	"os.Stderr": true,
@@ -109,13 +122,13 @@ var processStreams = map[string]bool{
 // a sound way to find the artifacts rather than a guess at them.
 var artifactName = regexp.MustCompile(`^[a-z0-9_]+\.(txt|lst|log)$`)
 
-// TestDebugArtifactsAreDeclared reads every non-test source file under pkg and
-// cmd and holds it to the three rules above.
+// TestDebugArtifactsAreDeclared reads every non-test source file under pkg,
+// cmd and internal and holds it to the three rules above.
 func TestDebugArtifactsAreDeclared(t *testing.T) {
 	fset := token.NewFileSet()
 	found := map[string]bool{} // artifact names seen in the source
 
-	for _, root := range []string{"pkg", "cmd"} {
+	for _, root := range []string{"pkg", "cmd", "internal"} {
 		err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
@@ -128,7 +141,9 @@ func TestDebugArtifactsAreDeclared(t *testing.T) {
 				t.Fatalf("%s: %v\n", path, err)
 			}
 			pkgPath := filepath.ToSlash(filepath.Dir(path))
-			isLibrary := root == "pkg"
+			// cmd is where a program is allowed to be a program; everything
+			// else in the module is something another package calls
+			isLibrary := root != "cmd"
 
 			for _, decl := range file.Decls {
 				fn, ok := decl.(*ast.FuncDecl)
@@ -142,8 +157,9 @@ func TestDebugArtifactsAreDeclared(t *testing.T) {
 						name := qualified(node.Fun)
 						if fileCreators[name] && isLibrary && writeSites[site] == "" {
 							t.Errorf("%s: %s calls %s\n"+
-								"\ta package under pkg is a library: if this is reachable from ml1.Run it must not\n"+
-								"\texist, and if it is an opt-in artifact for lasm, add %s to writeSites\n",
+								"\tanything outside cmd is a library: if this is reachable from ml1.Run it must\n"+
+								"\tnot exist, and if the file is one its caller asked for or an opt-in artifact\n"+
+								"\tfor lasm, add %s to writeSites with the reason\n",
 								position(fset, node.Pos()), site, name, site)
 						}
 					case *ast.SelectorExpr:

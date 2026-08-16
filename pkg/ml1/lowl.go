@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
+	"strings"
 
 	"github.com/maloquacious/ml_i/pkg/lowl/assembler"
 	"github.com/maloquacious/ml_i/pkg/lowl/ast"
@@ -24,15 +24,8 @@ import (
 // the S-variables, then drives it.
 //
 // The source cannot be committed here — its licence forbids redistributing a
-// machine readable copy — so it is loaded from a path at run time. That is
-// also what will let a newer version be dropped in without a code change.
-
-// defaultSourcePaths are where the LOWL source is looked for when a Job does
-// not name one, relative to the working directory.
-var defaultSourcePaths = []string{
-	filepath.Join(".downloads", "lowlml1", "ml1ajb.lwl"),
-	filepath.Join(".references", "ml1aih.lwl"),
-}
+// machine readable copy — so it is loaded from a path at run time. engine.go
+// has the search order and why it is what it is.
 
 // runCycleLimit is a runaway guard, not a budget. Real input runs for tens of
 // millions of instructions, so this is set where a stuck machine is caught in
@@ -177,10 +170,14 @@ func readSource(name string) ([]byte, error) {
 		}
 		return source, nil
 	}
-	for _, candidate := range defaultSourcePaths {
+	tried := EnginePaths()
+	for _, candidate := range tried {
 		if source, err := os.ReadFile(candidate); err == nil {
 			return source, nil
 		}
 	}
-	return nil, fmt.Errorf("%s: %w", defaultSourcePaths[0], ErrNoEngineSource)
+	// every place that was looked, because "cannot read the LOWL source" with
+	// one path attached reads as though that path were the only answer, and
+	// the whole point of the search is that there are several
+	return nil, fmt.Errorf("looked in %s: %w", strings.Join(tried, ", "), ErrNoEngineSource)
 }

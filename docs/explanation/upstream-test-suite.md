@@ -30,7 +30,7 @@ precisely that they encode someone else's test program. That is why `testdata/`,
 
 A **SHA-256 is not a copy.** It is thirty-two bytes from which nothing can be reconstructed. A file
 name and a byte count are likewise facts about a work rather than the work. So
-`cmd/fetchtestdata/manifest.json` records, for each archive, the URL, the archive digest, and the
+`internal/fetch/manifest.json` records, for each archive, the URL, the archive digest, and the
 name, size, and digest of every member, and that buys two things a bare download script would not:
 
 - **Integrity.** Nothing is extracted until the archive matches, and nothing is accepted until every

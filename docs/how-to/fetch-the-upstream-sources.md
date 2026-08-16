@@ -12,7 +12,7 @@ For *why* they cannot be committed, see [the upstream test suite](../explanation
 go run ./cmd/fetchtestdata
 ```
 
-That downloads each archive, checks it against the digests in `cmd/fetchtestdata/manifest.json`,
+That downloads each archive, checks it against the digests in `internal/fetch/manifest.json`,
 verifies every file it contains, and only then writes them out:
 
 | what | goes to | why there |
