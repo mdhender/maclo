@@ -26,9 +26,10 @@ go run ./cmd/ml1 --fetch-engine          # install the engine for a user with no
 go run ./cmd/maclo --engines             # what engines this build has compiled into it
 ```
 
-`lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, courtesy of
-`peterbourgon/ff`. `ml1`'s own options are hand-parsed, because the operating instructions let
-options and input files interleave; the long `--` options are all extensions.
+`lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, hand-rolled in
+`cmd/lasm/config.go` over the standard `flag` package; a flag beats the environment, which beats the
+file. `ml1`'s own options are hand-parsed too, because the operating instructions let options and
+input files interleave; the long `--` options are all extensions. `maclo` uses `flag` plainly.
 
 ## Golden tests
 
@@ -238,4 +239,4 @@ the per-user install relies on.
   P.J. Brown and R.D. Eager, and their licence permits building the source into a program but not
   redistributing it. Do not commit ML/I sources, test inputs derived from them, or excerpts of the
   upstream docs into tracked files.
-- Standard library only, apart from `peterbourgon/ff/v3` for CLI config in `cmd/lasm`.
+- **Standard library only.** `go.mod` has no `require` block and `go.sum` is empty. Keep it that way.

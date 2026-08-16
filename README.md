@@ -106,6 +106,8 @@ buffers, writing nothing to disk and printing nothing; two tests hold it to that
 | `pkg/postfix` | infix → postfix, for the assembler's `OF(...)` expressions |
 | `internal/fetch` | download and digest verification, shared by the two commands |
 
+No third-party dependencies: `go.mod` has no `require` block.
+
 ## Documentation
 
 - [Install ML/I](docs/how-to/install-ml1.md) — get a working `maclo` or `ml1`

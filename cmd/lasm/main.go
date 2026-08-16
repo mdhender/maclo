@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	cfg, err := getConfig()
+	cfg, err := getConfig(os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
 	}
