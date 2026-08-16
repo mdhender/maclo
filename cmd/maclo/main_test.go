@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // TestChooseEngine covers the three-way decision that is the whole point of

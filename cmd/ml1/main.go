@@ -19,8 +19,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/maloquacious/ml_i"
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 const (
@@ -100,7 +100,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	// error so that it can't be mistaken for macro output when the
 	// standard output is being used as an output file.
 	if cfg.version {
-		_, _ = fmt.Fprintf(stderr, "ml1: version %s\n", ml_i.Version())
+		_, _ = fmt.Fprintf(stderr, "ml1: version %s\n", maclo.Version())
 	}
 
 	// AA.4: all files are opened as soon as ML/I is entered, and a failure to

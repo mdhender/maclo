@@ -9,8 +9,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // testHost stands in for the outside world: a fixed source text, and two

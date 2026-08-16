@@ -19,7 +19,7 @@ For *why* it works that way, see
 ## Build with the engine inside (`maclo`)
 
 ```sh
-git clone https://github.com/maloquacious/ml_i && cd ml_i
+git clone https://github.com/mdhender/maclo && cd maclo
 go run ./cmd/fetchtestdata
 go build ./cmd/maclo
 ```
@@ -56,7 +56,7 @@ has to say about the run goes to the standard error.
 ## Install the AA-compatible command (`ml1`)
 
 ```sh
-go install github.com/maloquacious/ml_i/cmd/ml1@latest
+go install github.com/mdhender/maclo/cmd/ml1@latest
 ml1 --fetch-engine
 ```
 

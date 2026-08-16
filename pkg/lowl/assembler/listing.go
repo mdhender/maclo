@@ -7,7 +7,7 @@ package assembler
 import (
 	"bytes"
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 	"os"
 	"sort"
 )

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // The four fatal conditions of appendix AA.4.1, and the shape of what they

@@ -4,7 +4,7 @@
 
 package vm
 
-import "github.com/maloquacious/ml_i/pkg/lowl/op"
+import "github.com/mdhender/maclo/pkg/lowl/op"
 
 // MaxNumberText is how many words New reserves for MDCONV to build the decimal
 // text of a number in. Eleven characters hold the longest value ML/I allows in

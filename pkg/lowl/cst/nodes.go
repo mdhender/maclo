@@ -7,7 +7,7 @@ package cst
 
 import (
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/scanner"
+	"github.com/mdhender/maclo/pkg/lowl/scanner"
 )
 
 func Parse(name string, testBuffer, testScanner bool) ([]*Node, error) {

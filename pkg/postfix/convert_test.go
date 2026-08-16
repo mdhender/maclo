@@ -6,7 +6,7 @@ package postfix_test
 
 import (
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/postfix"
+	"github.com/mdhender/maclo/pkg/postfix"
 	"testing"
 )
 

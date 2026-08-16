@@ -8,8 +8,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // TestWorkspaceStartsAfterTheProgram pins where the free space is.

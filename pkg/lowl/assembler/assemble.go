@@ -8,9 +8,9 @@ package assembler
 import (
 	"bytes"
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/ast"
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/ast"
+	"github.com/mdhender/maclo/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 	"io"
 	"math"
 	"os"

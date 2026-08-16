@@ -4,7 +4,7 @@
 
 package scanner
 
-import "github.com/maloquacious/ml_i/pkg/lowl/op"
+import "github.com/mdhender/maclo/pkg/lowl/op"
 
 func isOpCode(s string) (op.Code, bool) {
 	code, ok := op.Lookup(s)

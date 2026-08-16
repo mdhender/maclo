@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // The engine is a runtime dependency, so where it is looked for is behaviour

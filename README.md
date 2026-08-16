@@ -27,7 +27,7 @@ better goes.
 ## Build
 
 ```sh
-git clone https://github.com/maloquacious/ml_i && cd ml_i
+git clone https://github.com/mdhender/maclo && cd maclo
 go run ./cmd/fetchtestdata     # the engine and the test corpora; both gitignored
 go build ./cmd/maclo ./cmd/ml1
 ```
@@ -107,7 +107,7 @@ buffers, writing nothing to disk and printing nothing; two tests hold it to that
 
 ## Documentation
 
-- [Install ML/I](docs/how-to/install-ml1.md) — get a working `ml1`
+- [Install ML/I](docs/how-to/install-ml1.md) — get a working `maclo` or `ml1`
 - [Fetch the upstream sources](docs/how-to/fetch-the-upstream-sources.md) — set up a checkout
 - [Golden tests](docs/reference/golden-tests.md) — the corpora and how they are compared
 - [Running ML/I on the LOWL VM](docs/explanation/running-ml1-on-the-lowl-vm.md) — the source

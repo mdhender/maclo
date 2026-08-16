@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Michael D Henderson.
 // All rights reserved.
 
-package ml_i_test
+package maclo_test
 
 import (
 	"go/ast"

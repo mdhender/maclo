@@ -9,7 +9,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // The listing and the output line count, driven through MDOUCH directly.

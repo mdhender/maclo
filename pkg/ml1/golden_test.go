@@ -17,7 +17,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // update rewrites the golden files of the corpus this repository owns. It

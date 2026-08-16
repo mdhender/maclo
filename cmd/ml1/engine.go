@@ -10,8 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/maloquacious/ml_i/internal/fetch"
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/internal/fetch"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // The bootstrap.
@@ -79,7 +79,7 @@ func fetchEngine(stdout, stderr io.Writer) int {
 	_, _ = fmt.Fprintf(stdout, "fetching %s\n", engine.URL)
 	if err := engine.Install(dir, fetch.Options{
 		Progress:  stdout,
-		UserAgent: "ml1 (github.com/maloquacious/ml_i)",
+		UserAgent: "ml1 (github.com/mdhender/maclo)",
 	}); err != nil {
 		_, _ = fmt.Fprintf(stderr, "ml1: %v\n", err)
 		return 1

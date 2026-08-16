@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // nestSource is a macro that recurses to a given depth, writing a bracket on

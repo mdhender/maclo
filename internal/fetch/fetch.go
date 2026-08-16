@@ -36,7 +36,7 @@ type Options struct {
 	UserAgent string
 }
 
-const defaultUserAgent = "ml_i (github.com/maloquacious/ml_i)"
+const defaultUserAgent = "maclo (github.com/mdhender/maclo)"
 
 // Install brings one archive up to date in target.
 //

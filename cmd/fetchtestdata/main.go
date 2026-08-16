@@ -41,7 +41,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/maloquacious/ml_i/internal/fetch"
+	"github.com/mdhender/maclo/internal/fetch"
 )
 
 func main() {
@@ -92,7 +92,7 @@ func realMain(dest, cache, corpus, printFor, engines string, verifyOnly, force b
 		VerifyOnly: verifyOnly,
 		Force:      force,
 		Progress:   os.Stdout,
-		UserAgent:  "fetchtestdata (github.com/maloquacious/ml_i)",
+		UserAgent:  "fetchtestdata (github.com/mdhender/maclo)",
 	}
 	for _, a := range chosen {
 		target := a.Target(root, dest)

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 // TestStorageExhaustionIsReported covers what happens when a process runs out

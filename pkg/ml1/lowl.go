@@ -10,10 +10,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/assembler"
-	"github.com/maloquacious/ml_i/pkg/lowl/ast"
-	"github.com/maloquacious/ml_i/pkg/lowl/cst"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/assembler"
+	"github.com/mdhender/maclo/pkg/lowl/ast"
+	"github.com/mdhender/maclo/pkg/lowl/cst"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // The LOWL backend.

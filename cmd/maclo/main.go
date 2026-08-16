@@ -36,8 +36,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/maloquacious/ml_i"
-	"github.com/maloquacious/ml_i/pkg/ml1"
+	"github.com/mdhender/maclo"
+	"github.com/mdhender/maclo/pkg/ml1"
 )
 
 func main() {
@@ -69,7 +69,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 
 	if opt.version {
-		_, _ = fmt.Fprintf(stdout, "maclo %s\n", ml_i.Version())
+		_, _ = fmt.Fprintf(stdout, "maclo %s\n", maclo.Version())
 	}
 	if opt.list {
 		return listEngines(stdout, stderr)

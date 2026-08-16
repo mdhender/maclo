@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // host is the MD-logic: everything the LOWL engine cannot know for itself.

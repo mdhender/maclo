@@ -7,10 +7,10 @@ package assembler_test
 import (
 	"testing"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/assembler"
-	"github.com/maloquacious/ml_i/pkg/lowl/ast"
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
-	"github.com/maloquacious/ml_i/pkg/lowl/vm"
+	"github.com/mdhender/maclo/pkg/lowl/assembler"
+	"github.com/mdhender/maclo/pkg/lowl/ast"
+	"github.com/mdhender/maclo/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/vm"
 )
 
 // The nodes are built here rather than assembled from a source file because

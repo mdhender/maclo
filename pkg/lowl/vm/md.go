@@ -10,7 +10,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/op"
 )
 
 // The machine dependent subroutines, as Supplement 3 specifies them.

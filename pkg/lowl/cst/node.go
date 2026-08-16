@@ -4,7 +4,7 @@
 
 package cst
 
-import "github.com/maloquacious/ml_i/pkg/lowl/op"
+import "github.com/mdhender/maclo/pkg/lowl/op"
 
 type Node struct {
 	Line, Col  int

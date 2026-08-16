@@ -2,17 +2,18 @@
 // Copyright (c) 2026 Michael D Henderson.
 // All rights reserved.
 
-// Package ml_i is the root of a Go port of ML/I, a general purpose macro
-// processor. The processor itself is pkg/ml1; this package holds only what
-// belongs to the distribution as a whole.
-package ml_i
+// Package maclo is the root of a Go port of ML/I, a general purpose macro
+// processor. The processor itself is pkg/ml1 and the two front ends are
+// cmd/maclo and cmd/ml1; this package holds only what belongs to the
+// distribution as a whole.
+package maclo
 
 // version is what this port reports for itself.
 //
 // It is a var rather than a const so that a release build can stamp a tag into
 // it without editing the source:
 //
-//	go build -ldflags "-X github.com/maloquacious/ml_i.version=0.1.0" ./cmd/ml1
+//	go build -ldflags "-X github.com/mdhender/maclo.version=0.1.0" ./cmd/maclo
 //
 // Nothing is tagged yet, and the default says so rather than claiming a
 // release that has not happened.

@@ -6,8 +6,8 @@ package assembler
 
 import (
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/ast"
-	"github.com/maloquacious/ml_i/pkg/postfix"
+	"github.com/mdhender/maclo/pkg/lowl/ast"
+	"github.com/mdhender/maclo/pkg/postfix"
 )
 
 func evalMacro(macro string, expr *ast.Parameter, env map[string]int) (int, error) {

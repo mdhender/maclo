@@ -7,8 +7,8 @@ package ast
 
 import (
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/cst"
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/cst"
+	"github.com/mdhender/maclo/pkg/lowl/op"
 )
 
 type Nodes []*Node

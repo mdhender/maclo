@@ -6,7 +6,7 @@ package vm
 
 import (
 	"fmt"
-	"github.com/maloquacious/ml_i/pkg/lowl/op"
+	"github.com/mdhender/maclo/pkg/lowl/op"
 	"io"
 )
 
