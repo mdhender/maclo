@@ -223,7 +223,7 @@ the per-user install relies on.
 
 ## Repository conventions
 
-- Every `.go` file starts with the three-line `ml_i - an ML/I macro processor ported to Go` /
+- Every `.go` file starts with the three-line `maclo - an ML/I macro processor ported to Go` /
   copyright header. Keep it on new files.
 - `testdata/`, `.archive/`, `.notes/`, `.downloads/` each ignore their entire contents (`*` plus
   `!.gitignore`). This is deliberate: LOWL/L sources and documentation are copyright P.J. Brown and
