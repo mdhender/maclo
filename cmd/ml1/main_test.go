@@ -178,8 +178,23 @@ func TestRun(t *testing.T) {
 	// an input file that does not exist is reported before anything is run
 	out.Reset()
 	errOut.Reset()
-	if status := run([]string{filepath.Join(dir, "nope.ml1")}, strings.NewReader(""), &out, &errOut); status != 255 {
-		t.Errorf("missing input: want status 255, got %d", status)
+	// 1, not 255: AA reserves 255 for a fatal error that ended a process that
+	// had started, and a file that will not open means it never did. The
+	// reference implementation exits 1 here too, for input, output, debugging
+	// and listing files alike.
+	if status := run([]string{filepath.Join(dir, "nope.ml1")}, strings.NewReader(""), &out, &errOut); status != 1 {
+		t.Errorf("missing input: want status 1, got %d", status)
+	}
+	for _, args := range [][]string{
+		{"-o", filepath.Join(dir, "nodir", "x"), source},
+		{"-d", filepath.Join(dir, "nodir", "x"), source},
+		{"-l", filepath.Join(dir, "nodir", "x"), source},
+	} {
+		out.Reset()
+		errOut.Reset()
+		if status := run(args, strings.NewReader(""), &out, &errOut); status != 1 {
+			t.Errorf("%v: want status 1, got %d", args, status)
+		}
 	}
 
 	// a job that is fine reaches the engine, which says what it could not load

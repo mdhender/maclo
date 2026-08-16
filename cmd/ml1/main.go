@@ -105,10 +105,17 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 	// AA.4: all files are opened as soon as ML/I is entered, and a failure to
 	// open one ends the process at once.
+	//
+	// The status for that is 1, not 255. AA reserves 255 for "a fatal error
+	// caused ML/I to terminate the process prematurely", and a file that will
+	// not open means the process never began — the same class of failure as an
+	// unusable command line, which already exits 1 above. The reference
+	// implementation agrees: it exits 1 for an input, output, debugging or
+	// listing file it cannot open.
 	job, closeAll, err := cfg.job(stdin, stdout, stderr)
 	if err != nil {
 		_, _ = fmt.Fprintf(stderr, "ml1: %v\n", err)
-		return 255
+		return 1
 	}
 
 	res, runErr := ml1.Run(job)
