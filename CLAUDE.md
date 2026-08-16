@@ -204,7 +204,14 @@ ml1 leaves both empty.
 building the source in but not redistributing it, so a `.lwl` must never be committable. **The
 tracked README is load-bearing**: `//go:embed` on a directory with only hidden files fails to
 compile, and a tree with zero engines has to build. `Engines()` lists them newest first by file
-name, which is where ML/I's version lives, and the newest is `DefaultEngine()`.
+name, which is where ML/I's version lives, and the newest is `DefaultEngine()`. A fetch installs all
+three published versions — AJB, AIH, AIG — so ordering and selection are exercised rather than
+hypothetical. They agree on the whole local corpus and differ in diagnostic wording: AIH and AIG
+print the context in capitals. **Goldens are recorded against AJB.**
+
+Which archives carry an engine is `"engine": true` in `internal/fetch/manifest.json`, not a name
+matched in code, so a new version of ML/I is an entry and nothing else. `-print-manifest` generates
+the entry from a downloaded archive.
 
 `pkg/ml1/engine.go` owns the file search. `EnginePaths()`
 returns, in order: `$ML1_LOWL_SOURCE`, then `$ML1_HOME` or the per-user directory (macOS and Windows

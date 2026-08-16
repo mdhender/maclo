@@ -90,6 +90,56 @@ func TestManifest(t *testing.T) {
 	}
 }
 
+// TestEngineArchives covers the flag that decides which archives get their
+// sources installed for embedding.
+//
+// It is a fact in the manifest rather than a name matched in code, so that
+// adding a version of ML/I is an entry and no code change. What the test holds
+// is the part an entry can get wrong: an archive marked as an engine has to
+// carry a .lwl, and it has to unpack somewhere a fetch is allowed to write.
+func TestEngineArchives(t *testing.T) {
+	m, err := Load()
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+
+	engines := 0
+	for i := range m.Corpora {
+		a := &m.Corpora[i]
+		if !a.Engine {
+			continue
+		}
+		engines++
+
+		var sources int
+		for _, f := range a.Files {
+			if strings.HasSuffix(f.Name, ".lwl") {
+				sources++
+			}
+		}
+		if sources == 0 {
+			t.Errorf("%s: marked as an engine but carries no .lwl", a.Name)
+		}
+		// Under is what keeps an archive out of testdata/upstream, which -dest
+		// may move; an engine has a fixed home because ml1 goes looking there.
+		if a.Under != ".downloads" {
+			t.Errorf("%s: want it unpacked under .downloads, got %q", a.Name, a.Under)
+		}
+	}
+	if engines == 0 {
+		t.Errorf("no archive is marked as an engine, so a fetch would build nothing in")
+	}
+
+	// the one a caller asks for by name when it wants only one
+	engine, err := m.Find(EngineCorpus)
+	if err != nil {
+		t.Fatalf("Find: %v", err)
+	}
+	if !engine.Engine {
+		t.Errorf("%s: the default engine corpus is not marked as an engine", EngineCorpus)
+	}
+}
+
 // TestSelect covers the three ways a caller names what it wants. cmd/ml1 asks
 // for the engine by name and must not drag the test suite along with it.
 func TestSelect(t *testing.T) {

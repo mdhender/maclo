@@ -78,11 +78,14 @@ func EnginePaths() []string {
 	if dir := EngineDir(); dir != "" {
 		paths = append(paths, filepath.Join(dir, EngineFile))
 	}
-	// the repository layout, relative to the working directory: where
-	// cmd/fetchtestdata puts the engine for the tests
+	// The repository layout, relative to the working directory: where
+	// cmd/fetchtestdata unpacks the engine archives. Newest first, and the
+	// older ones are here so that a checkout which fetched something is never
+	// told it has nothing — ml1 needs *an* engine, and an old one runs.
 	paths = append(paths,
 		filepath.Join(".downloads", "lowlml1", EngineFile),
-		filepath.Join(".references", "ml1aih.lwl"),
+		filepath.Join(".downloads", "lowlml1aih", "ml1aih.lwl"),
+		filepath.Join(".downloads", "lowlml1aig", "ml1aig.lwl"),
 	)
 	return paths
 }

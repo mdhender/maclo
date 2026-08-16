@@ -36,7 +36,13 @@ Confirm what your binary carries:
 
 ```
 ml1ajb       AJB    57333 bytes  (default)
+ml1aih       AIH    56366 bytes
+ml1aig       AIG    56368 bytes
 ```
+
+Those are the three LOWL sources ml1.org.uk publishes. They agree on everything the test corpus
+covers; where they differ is the wording of diagnostics, and AIH and AIG write their context
+print-outs in capitals where AJB does not.
 
 Then run a program:
 
@@ -79,9 +85,9 @@ reference for the language itself.
 ```
 
 A `--engine` argument that is neither a built-in name nor an existing file is refused, and the
-message lists what the binary does have. To build with several, put more than one `.lwl` in
-`pkg/ml1/engines/` and rebuild; the newest by file name becomes the default, so `ml1ajb` wins over
-`ml1aih`.
+message lists what the binary does have. The newest by file name is the default, so `ml1ajb` wins
+over `ml1aih` and `ml1aig`. To build with a source of your own, drop its `.lwl` into
+`pkg/ml1/engines/` and rebuild — nothing else needs changing.
 
 `ml1` selects with `-s <file>`, `$ML1_LOWL_SOURCE`, or `$ML1_HOME`, in that order, and never uses an
 embedded engine — it behaves the way its operating instructions say it does whatever the binary was

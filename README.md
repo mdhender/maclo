@@ -32,8 +32,9 @@ go run ./cmd/fetchtestdata     # the engine and the test corpora; both gitignore
 go build ./cmd/maclo ./cmd/ml1
 ```
 
-The fetch writes `pkg/ml1/engines/ml1ajb.lwl`, which is the directory `//go:embed` compiles in, and
-`.downloads/lowlml1/`, which is where `ml1` looks at run time.
+The fetch writes every published LOWL source of ML/I — AJB, AIH and AIG — into
+`pkg/ml1/engines/`, which is the directory `//go:embed` compiles in, and unpacks each archive under
+`.downloads/`, which is where `ml1` looks at run time. `maclo` runs the newest unless told otherwise.
 
 ```sh
 cat > hello.ml1 <<'END'
@@ -43,7 +44,7 @@ GREET
 END
 
 ./maclo hello.ml1        # Hello, ML/I
-./maclo --engines        # ml1ajb  AJB  57333 bytes  (default)
+./maclo --engines        # ml1ajb, ml1aih, ml1aig — newest first
 ```
 
 `go install` also works, but note what it gets you: the module on the Go proxy has an empty engines

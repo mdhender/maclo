@@ -5,7 +5,8 @@ and versions follow [semantic versioning](https://semver.org/) once there is one
 tagged yet.
 
 Versions here are versions of **the port**. ML/I's own version is a property of the LOWL source the
-engine runs, which is AJB; see [the README](README.md#status) for what that implies.
+engine runs — AJB, AIH or AIG, whichever a build was given; see [the README](README.md#status) for
+what that implies.
 
 ## Unreleased
 
@@ -38,10 +39,14 @@ Everything so far. This will become 0.1.0.
 - `cmd/ml1` is unchanged and stays that way. It follows Appendix AA and finds its engine on disk,
   and `Run` does not consult the embedded engines unless a caller asks for one by name — so what
   `ml1` does is independent of what the binary was built with.
-- `go run ./cmd/fetchtestdata` now also copies the `.lwl` into the embed directory, so one command
+- **All three published LOWL sources are fetched and embedded** — AJB, AIH and AIG. Which archives
+  carry an engine is a `"engine": true` fact in `internal/fetch/manifest.json` rather than a name
+  matched in code, so adding a version of ML/I is a manifest entry and no code change.
+- `go run ./cmd/fetchtestdata` copies each engine's `.lwl` into the embed directory, so one command
   still prepares a checkout completely.
+- The three agree on all 25 local corpus cases, byte for byte on both streams. They differ in the
+  wording of diagnostics: AIH and AIG write the context print-out in capitals where AJB does not.
 - A binary built from this tree **may not be distributed**. There are no release downloads.
-
 - `ml1 --fetch-engine` downloads the LOWL source of ML/I from ml1.org.uk into a per-user directory,
   verifying every file against a SHA-256 recorded in `internal/fetch/manifest.json` before writing
   anything. This is what makes an installed binary usable; before it, the engine was only ever found
@@ -49,8 +54,6 @@ Everything so far. This will become 0.1.0.
 - `ml1 --engine` reports every path that is searched and which one answers.
 - The search order is `-s`, then `$ML1_LOWL_SOURCE`, then `$ML1_HOME` or the per-user directory,
   then `.downloads/` in a checkout.
-- `go run ./cmd/fetchtestdata` still populates a checkout with the engine and the test corpora
-  together.
 
 ### Tests
 
@@ -67,6 +70,7 @@ Everything so far. This will become 0.1.0.
 
 ### Known limitations
 
-- `MCCVAR` and the bitwise `&` and `|` of a macro expression are absent from the 1986 source and so
-  are absent here.
-- The engine is a runtime dependency and cannot be embedded, shipped, or vendored.
+- `MCCVAR` and the bitwise `&` and `|` of a macro expression are absent from every published LOWL
+  source and so are absent here.
+- The engine can be built into a binary but not shipped in one, and not vendored. Every machine that
+  wants a working processor has to fetch it.

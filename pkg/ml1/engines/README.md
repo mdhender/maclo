@@ -1,8 +1,8 @@
 # Engines
 
 The LOWL sources of ML/I that get built into the binary. Drop `*.lwl` files here and they are
-embedded by `//go:embed` in `pkg/ml1/engines.go`; `go run ./cmd/fetchtestdata` puts `ml1ajb.lwl`
-here for you.
+embedded by `//go:embed` in `pkg/ml1/embed.go`; `go run ./cmd/fetchtestdata` puts all three of the
+published versions here for you — `ml1ajb.lwl`, `ml1aih.lwl` and `ml1aig.lwl`.
 
 **Nothing in this directory may be committed.** The sources are copyright P.J. Brown and
 R.D. Eager. Their licence permits building them into a program — which is what the embed does — but
@@ -24,6 +24,11 @@ The practical consequences:
 
 ## Naming
 
-The file name carries the version, and that is what orders them: `ml1aih.lwl` is older than
-`ml1ajb.lwl`, and the newest is the default. `maclo --engines` lists what a given binary actually
-has, which is the only reliable way to tell.
+The file name carries the version, and that is what orders them: `ml1aig` is older than `ml1aih` is
+older than `ml1ajb`, and the newest is the default. `maclo --engines` lists what a given binary
+actually has, which is the only reliable way to tell.
+
+The three agree on everything the local corpus covers — all 25 cases produce identical output and
+identical debugging streams. Where they differ is the wording of diagnostics: AIH and AIG write the
+context print-out in capitals (`DETECTED IN`, `LINE 3 OF SOURCE TEXT`) where AJB writes it in lower
+case. Anything golden is therefore recorded against AJB.

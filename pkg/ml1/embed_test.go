@@ -91,6 +91,36 @@ func TestRunFromEmbeddedEngine(t *testing.T) {
 	}
 }
 
+// TestEveryEmbeddedEngineRuns assembles and runs each one, not just the
+// default.
+//
+// A source that is built in but does not work is the worst of the failure
+// modes here, because --engines lists it and nothing else looks at it until a
+// user selects it. The engines are twenty years apart and were fetched
+// separately, so "the newest one works" says very little about the others.
+func TestEveryEmbeddedEngineRuns(t *testing.T) {
+	for _, e := range requireEmbedded(t) {
+		t.Run(e.Name, func(t *testing.T) {
+			var out, dbg bytes.Buffer
+			res, err := ml1.Run(ml1.Job{
+				Inputs:  []ml1.Input{ml1.StringInput("each.ml1", "plain text\n")},
+				Outputs: []io.Writer{&out},
+				Debug:   &dbg,
+				Engine:  e.Name,
+			})
+			if err != nil {
+				t.Fatalf("run: %v", err)
+			}
+			if got, want := out.String(), "plain text\n"; got != want {
+				t.Errorf("output: want %q: got %q", want, got)
+			}
+			if res.Errors != 0 {
+				t.Errorf("errors: want 0, got %d (%s)", res.Errors, dbg.String())
+			}
+		})
+	}
+}
+
 // TestUnknownEngineIsRefused covers the name that is not there. It must not
 // fall through to a file search and pick up whatever the working directory
 // happens to hold, because that would make a typo run a different processor.

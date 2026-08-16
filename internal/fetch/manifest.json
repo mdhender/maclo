@@ -9,6 +9,7 @@
       "size": 16300,
       "dest": "lowlml1",
       "under": ".downloads",
+      "engine": true,
       "files": [
         {
           "name": "MANIFEST",
@@ -19,6 +20,50 @@
           "name": "ml1ajb.lwl",
           "size": 57333,
           "sha256": "ee0ce3aba0ad5f4c6d4aec071e37daa59c3f4d7d6e9a12c9814140683d009500"
+        }
+      ]
+    },
+    {
+      "name": "lowlml1aih",
+      "url": "https://www.ml1.org.uk/tgz/lowlml1aih.tar.gz",
+      "format": "tar.gz",
+      "sha256": "955a8cb76f82a457db81caa378b6bef58fed655097c48565623a06a3b5d14813",
+      "size": 15807,
+      "dest": "lowlml1aih",
+      "under": ".downloads",
+      "engine": true,
+      "files": [
+        {
+          "name": "MANIFEST",
+          "size": 77,
+          "sha256": "61b10517c7b51b8a27b1383ae45ee77255d934ae81bbe4ba2f01d7c6db588cbc"
+        },
+        {
+          "name": "ml1aih.lwl",
+          "size": 56366,
+          "sha256": "722f89a6c59697364316cb9e2d3f27ddf35f2445e5d17b6f9bb941b3f9eee5b9"
+        }
+      ]
+    },
+    {
+      "name": "lowlml1aig",
+      "url": "https://www.ml1.org.uk/tgz/lowlml1aig.tar.gz",
+      "format": "tar.gz",
+      "sha256": "2b406e8c4a48a7701aec8665eabbbb3df07fd88f1afdc3e09ad5a37046ef0fe9",
+      "size": 15790,
+      "dest": "lowlml1aig",
+      "under": ".downloads",
+      "engine": true,
+      "files": [
+        {
+          "name": "MANIFEST",
+          "size": 77,
+          "sha256": "4ef398ed72d67acf5e19158920e74869866fa43d894b7059c500b4f172e2e33f"
+        },
+        {
+          "name": "ml1aig.lwl",
+          "size": 56368,
+          "sha256": "26fc8fd0722f3917f0d351835b71e0eb7eee0ffdbc0b91e50dfa8d2d786091bc"
         }
       ]
     },

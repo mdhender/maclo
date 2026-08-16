@@ -94,20 +94,25 @@ func realMain(dest, cache, corpus, printFor, engines string, verifyOnly, force b
 		Progress:   os.Stdout,
 		UserAgent:  "fetchtestdata (github.com/mdhender/maclo)",
 	}
+	if engines == "" {
+		engines = filepath.Join(root, "pkg", "ml1", "engines")
+	}
+
 	for _, a := range chosen {
 		target := a.Target(root, dest)
 		if err := a.Install(target, opt); err != nil {
 			return err
 		}
-		// The engine is not only test data. Copying it into the embed
-		// directory is what lets it be compiled into cmd/maclo, and doing it
-		// here rather than leaving it to the reader is the difference between
-		// a checkout that builds a working processor and one that builds an
-		// empty one.
-		if a.Name == fetch.EngineCorpus {
-			if engines == "" {
-				engines = filepath.Join(root, "pkg", "ml1", "engines")
-			}
+		// An engine archive is not only test data. Copying its sources into
+		// the embed directory is what lets them be compiled into cmd/maclo,
+		// and doing it here rather than leaving it to the reader is the
+		// difference between a checkout that builds a working processor and
+		// one that builds an empty one.
+		//
+		// Which archives those are is a fact in the manifest rather than a
+		// name matched here, so adding a version of ML/I is an entry with
+		// "engine": true and no code change at all.
+		if a.Engine {
 			if _, err := fetch.InstallEngines(target, engines, opt); err != nil {
 				return err
 			}

@@ -30,9 +30,10 @@ import (
 )
 
 const (
-	// EngineCorpus is the manifest entry holding the LOWL source of ML/I.
-	// Fetching it is what turns a checkout, or an installed binary, from
-	// something that reports ErrNoEngineSource into a working processor.
+	// EngineCorpus is the manifest entry holding the newest published LOWL
+	// source of ML/I. Several entries carry an engine — see Archive.Engine —
+	// and this is the one to fetch when only one is wanted, which is what
+	// `ml1 --fetch-engine` does for a user with no checkout.
 	EngineCorpus = "lowlml1"
 
 	// EngineFile is the member of that archive which is the processor.
@@ -77,6 +78,15 @@ type Archive struct {
 	// an older generation of the same tests rather than a re-encoding of the
 	// tar one, so it is not interchangeable and does not gate anything.
 	Optional bool `json:"optional,omitempty"`
+
+	// Engine marks an archive whose .lwl members are LOWL sources of ML/I, to
+	// be installed where //go:embed will compile them in as well as unpacked.
+	//
+	// It is a property of the entry rather than a name matched in code because
+	// there is more than one version of ML/I and there will be more: naming
+	// one of them in a condition made the newest source the only one a build
+	// could ever carry, which is exactly what the embedding was for.
+	Engine bool `json:"engine,omitempty"`
 
 	// Files is every member the archive should yield, so that a partial
 	// extraction or a later hand-edit is detectable.
