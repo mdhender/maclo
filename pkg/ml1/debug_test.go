@@ -37,7 +37,8 @@ import (
 //     reader needs to see what is being checked.
 //
 // The substrings are also chosen to avoid the two places the 1986 LOWL source
-// and the CKQ golden files disagree, both described in BURNDOWN.md: a message
+// and the CKQ golden files disagree, both described in
+// docs/explanation/running-ml1-on-the-lowl-vm.md: a message
 // that ends in a run of newlines, and the spacing around "with arguments" and
 // the enumerated arguments under it. Neither is a defect on this side, and
 // pinning either would pin the skew.
@@ -359,7 +360,8 @@ GREET
 	// writes the statistics and then calls PRENV to list the constructions.
 	// Appendix AA describes the other order, "preceded by a list of the
 	// currently defined constructions", which is what the later CKQ logic does
-	// — the same version skew BURNDOWN.md records elsewhere. This asserts what
+	// — the same version skew docs/explanation/running-ml1-on-the-lowl-vm.md
+	// records elsewhere. This asserts what
 	// the engine we have must do, so that a change to it is deliberate.
 	if stats > list {
 		t.Errorf("S18=3: want the statistics before the list, as LOHALT writes them: got\n%s\n", both)

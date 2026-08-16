@@ -22,10 +22,10 @@ import (
 // opcodes one at a time against expectations built by hand; LOWLTEST is a real
 // program that exercises them against each other, which is how it would notice
 // a regression in something like GOADD or the two stacks. It is worth having
-// even though a passing run is not proof of much on its own: fac4cd1 fixed two
-// bugs — RL storing an address rather than a distance, and CSS popping one link
-// instead of clearing the stack — that survived both a clean assembly and a
-// passing LOWLTEST.
+// even though a passing run is not proof of much on its own: two bugs — RL
+// storing an address rather than a distance, and CSS popping one link instead
+// of clearing the stack — survived both a clean assembly and a passing
+// LOWLTEST before they were found.
 //
 // The program cannot be committed here, so the test skips when it is absent,
 // the same way the upstream corpus does in pkg/ml1. The skip is keyed on the

@@ -45,8 +45,8 @@ import (
 //  2. A file name written as a literal in the source is a debug artifact by
 //     definition — a real output file is named by the caller — so every one of
 //     them is listed here, with what writes it and what turns it on.
-//  3. Every artifact is in .gitignore. That rule earned itself: until d417033
-//     assembler.Assemble took no Options and wrote its listings on every call,
+//  3. Every artifact is in .gitignore. That rule earned itself: assembler.Assemble
+//     once took no Options and wrote its listings on every call,
 //     so running its tests dropped asm_listing.txt and asm_symtab.txt into
 //     pkg/lowl/assembler — where both were still sitting when this was written,
 //     invisible to git status because someone had named them. scanner_buffer.txt

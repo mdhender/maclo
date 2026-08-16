@@ -166,7 +166,8 @@ func runExample(t *testing.T, dir, oracle string, ex example) {
 	default:
 		t.Errorf("%s: agrees with the oracle, which it is not supposed to: %s\n"+
 			"\tthe engine has gained the construct, or the example has stopped using it;\n"+
-			"\tdrop the skew note here and in BURNDOWN.md\n", ex.name, ex.skew)
+			"\tdrop the skew note here and in docs/explanation/running-ml1-on-the-lowl-vm.md\n",
+			ex.name, ex.skew)
 	}
 }
 

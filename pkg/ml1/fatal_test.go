@@ -40,8 +40,9 @@ import (
 // One difference from the oracle runs is expected and is not asserted against.
 // The prologue is PRERR's, and PRERR is one of the three literals in the 1986
 // LOWL source that CKQ writes with one newline fewer, so our print-out has a
-// blank line the oracle's does not. BURNDOWN.md records the skew; the
-// assertions below step around it the way the rest of the suite does.
+// blank line the oracle's does not. docs/explanation/running-ml1-on-the-lowl-vm.md
+// records the skew; the assertions below step around it the way the rest of the
+// suite does.
 
 // runFatal runs one source and hands back both streams, the way runDebug does,
 // but returns the error rather than failing on it: an aborted process is what

@@ -76,8 +76,8 @@ that version skew and nothing else:
 
 None of it is a defect in the port, and none of it is fixable by porting harder — closing it means
 implementing CKQ's changes, which is a different project. It is left failing rather than skipped so
-that it stays measured. **Anything else red is a regression.** The analysis is in
-[BURNDOWN.md](BURNDOWN.md) and
+that it stays measured. **Anything else red is a regression.** The analysis, down to the three
+`MESS` literals it comes from, is in
 [running ML/I on the LOWL VM](docs/explanation/running-ml1-on-the-lowl-vm.md).
 
 ## How it runs
