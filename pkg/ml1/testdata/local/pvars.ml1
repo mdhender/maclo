@@ -1,0 +1,14 @@
+MCSKIP MT,<>
+MCINS %.
+More permanent variables can be allocated, and they start at zero.
+MCPVAR 40
+MCSET P40=6
+MCSET P39=P40*7
+%P39. and %P40.
+A variable may be named by an expression, which is how an array is
+written.
+MCSET P1=3
+MCSET PP1=99
+%P3. is the same as %PP1.
+MCSET P2=1
+%PPP2. reaches P3 through P1

@@ -1,0 +1,13 @@
+A macro-time test can ask which class a piece of text belongs to.
+1234 is a number
+-17 is a number
++0 is a number
+ABC is letters
+A1 is an identifier
+1A is an identifier
+a-b is none of them
+The two equality tests are different: one compares text and the
+other compares numbers.
+007 and 7 are numerically equal
+007 and 7 are not the same characters
+done

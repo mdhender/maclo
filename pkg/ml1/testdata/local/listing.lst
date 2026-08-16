@@ -1,0 +1,6 @@
+    3.   A value of two asks for the number of each output line in front of it.
+    4.   
+    5.   The empty line above is a line like any other, and is numbered too.
+A value of one asks for the same text without the numbers.
+    8.   The count is of output lines, not of listed ones, so it has gone on
+    9.   while the listing was switched off.

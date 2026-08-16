@@ -1,0 +1,9 @@
+MCSKIP MT,<>
+MCINS %.
+A closing delimiter can be left outside the construction it closes,
+so that one newline can close a call and then close the call that
+contains it. The node flag zero says so.
+MCDEF ADD , NL N0 AS <(add %A1. to %A2.)>
+MCDEF IF THEN NL AS <[if %A1. then %A2.]>
+ADD x,y
+IF ready THEN ADD p,q

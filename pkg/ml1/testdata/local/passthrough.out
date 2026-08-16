@@ -1,0 +1,9 @@
+Plain text passes through the processor untouched.
+
+The line after this one is blank except for three spaces.
+   
+	This line begins with a tab.
+    This line begins with four spaces.
+This line ends with a single space. 
+Two  spaces  separate  each  of  these  words.
+The end.

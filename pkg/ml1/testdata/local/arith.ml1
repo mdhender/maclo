@@ -1,0 +1,11 @@
+MCSKIP MT,<>
+MCINS %.
+Macro-time arithmetic on permanent variables.
+MCSET P1=6
+MCSET P2=7
+%P1. times %P2. is %P1*P2.
+%P1. plus %P2. is %P1+P2.
+%P2. minus %P1. is %P2-P1.
+MCSET P3=P1*P2+1
+P3 holds %P3.
+Division truncates: %P2./%P1. is %P2/P1.

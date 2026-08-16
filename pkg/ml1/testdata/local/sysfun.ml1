@@ -1,0 +1,13 @@
+MCSKIP MT,<>
+MCINS %.
+MCLENG counts the characters of its argument.
+MCLENG(ABCDE) and MCLENG() and MCLENG(  two spaces  )
+MCSUB takes a substring, counting from one.
+MCSUB(ABC/XYZ,3,6)
+MCSUB(ARGUMENT,-2,0)
+MCSUB(ABCDE,1,1) and MCSUB(ABCDE,5,5)
+An empty or impossible range gives nothing at all:
+[MCSUB(ABCDE,4,2)] [MCSUB(ABCDE,0,9)] [MCSUB(ABCDE,2,99)]
+The value is not evaluated again:
+MCDEF ENT AS <SOMETHING ELSE>
+[MCSUB(ARGUMENT,-2,0)]

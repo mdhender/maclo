@@ -1,0 +1,17 @@
+MCSKIP MT,<>
+MCINS %.
+Macros with arguments.
+MCDEF GREET; AS <Hello, %A1.!>
+GREET world;
+GREET ML/I;
+MCDEF JOIN,; AS <%A1.-%A2.>
+JOIN left,right;
+MCDEF COUNT,,; AS <%A1./%A2./%A3.>
+COUNT one,two,three;
+A name on its own is a whole delimiter structure, so the simplest
+macro has no arguments and needs no brackets round its replacement
+text: the rest of the line is it.
+MCDEF ARRSIZE AS 6
+an array of ARRSIZE
+MCDEF Bob AS Alice
+Bob and Bob again

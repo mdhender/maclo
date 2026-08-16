@@ -1,0 +1,10 @@
+MCSKIP MT,<>
+MCINS %.
+Text inside the skip brackets reaches the output untouched.
+MCDEF SHOUT; AS <LOUD>
+SHOUT here;
+<SHOUT here; is left alone>
+Skips nest, and only the outermost pair is removed:
+<outer <inner> outer>
+An empty skip separates a name from what follows it: <>SHOUT here;
+It disappears entirely, so ab<>cd becomes one word.

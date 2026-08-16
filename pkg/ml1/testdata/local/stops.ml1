@@ -1,0 +1,12 @@
+MCSKIP MT,<>
+MCINS %.
+A stop marker ends the search for a delimiter of a construction, and
+is consulted at no other time.
+MCSTOP NL
+MCDEF IF THEN NL AS <[if %A1. then %A2.]>
+IF x = y THEN go to z
+The newline above closed the call rather than stopping it: a name
+clash between a delimiter and a stop marker goes to the delimiter,
+and the delimiter was consumed, so this sentence ran on from it.
+MCDEF FIND; AS <[%A1.]>
+FIND this one is closed;

@@ -1,0 +1,5 @@
+A closing delimiter can be left outside the construction it closes,
+so that one newline can close a call and then close the call that
+contains it. The node flag zero says so.
+(add x to y)
+[if ready then (add p to q)]

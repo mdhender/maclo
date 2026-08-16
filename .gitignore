@@ -1,0 +1,38 @@
+*~
+*.dll
+*.dvi
+*.dylib
+*.exe
+*.gif
+*.gz
+*.jpg
+*.pdf
+*.png
+*.so
+*.swp
+*.tar
+*.test
+*.tgz
+*.zip
+*.Z
+.env
+.env.*
+.idea/
+lua/
+/fetchtestdata
+/ml1
+notes.txt
+site/
+
+# debug artifacts that lasm and its stages write to the current directory.
+# *.out used to be ignored wholesale, which would have swallowed the golden
+# files in pkg/ml1/testdata, so these are named instead. The list is checked
+# against the source by TestDebugArtifactsAreDeclared, which is also what says
+# a library call must not produce any of them.
+asm_listing.txt
+asm_symtab.txt
+ast_listing.txt
+scanner_buffer.txt
+scanner_tokens.txt
+vm_stdmsg.txt
+vm_stdout.txt

@@ -1,0 +1,17 @@
+Three of the conditions compare numbers, and they differ only at
+equality: GR is false there, GE is true, and EN is true only there.
+There is no less-than in the vocabulary, so a test that wants one
+writes its two arguments the other way round.
+4 3: GR, GE, not EN
+3 3: not GR, GE, EN
+2 3: not GR, not GE, not EN
+-6 -6: not GR, GE, EN
+The label of a jump is a macro expression as well, so a variable can
+name the destination and the jump becomes a table. Arithmetic is
+allowed there too, which is how a table is given a base.
+second
+third
+first
+none
+one
+several

@@ -1,0 +1,6 @@
+Macro-time arithmetic on permanent variables.
+6 times 7 is 42
+6 plus 7 is 13
+7 minus 6 is 1
+P3 holds 43
+Division truncates: 7/6 is 1

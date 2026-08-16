@@ -1,0 +1,34 @@
+MCSKIP MT,<>
+MCINS %.
+Three of the conditions compare numbers, and they differ only at
+equality: GR is false there, GE is true, and EN is true only there.
+There is no less-than in the vocabulary, so a test that wants one
+writes its two arguments the other way round.
+MCDEF REPORT,; AS <%A1. %A2.: MCGO L1 IF %A1. GR %A2.
+not <>%L1.GR, MCGO L2 IF %A1. GE %A2.
+not <>%L2.GE, MCGO L3 IF %A1. EN %A2.
+not <>%L3.EN>
+REPORT 4,3;
+REPORT 3,3;
+REPORT 2,3;
+REPORT -6,-6;
+The label of a jump is a macro expression as well, so a variable can
+name the destination and the jump becomes a table. Arithmetic is
+allowed there too, which is how a table is given a base.
+MCDEF PICK; AS <MCSET T1=%A1.
+MCGO LT1
+%L1.first<>MCGO L0
+%L2.second<>MCGO L0
+%L3.third>
+PICK 2;
+PICK 3;
+PICK 1;
+MCDEF SIZE; AS <MCSET T1=%A1.
+MCGO L T1 + 10 IF T1 GE 1
+%L10.none<>MCGO L0
+%L11.one<>MCGO L0
+%L12.a pair<>MCGO L0
+%L13.several>
+SIZE 0;
+SIZE 1;
+SIZE 3;

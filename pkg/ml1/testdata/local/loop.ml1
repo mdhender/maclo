@@ -1,0 +1,25 @@
+MCSKIP MT,<>
+MCINS %.
+A macro label is remembered as it is passed, so a jump can go back to
+a label already seen; one not yet seen is found by a forward search
+from the point of scan. Both work inside a replacement text, so a loop
+there may jump back or recurse. Only the source text is restricted: it
+cannot jump backwards, so a loop must be moved into a macro.
+MCDEF COUNTDOWN; AS <MCGO L1 IF %A1. GR 0
+liftoff<>MCGO L0
+%L1.%A1. COUNTDOWN %%A1.-1.;>
+COUNTDOWN 3;
+MCDEF FACT; AS <MCGO L1 IF %A1. GR 1
+1<>MCGO L0
+%L1.%%A1.*FACT %%A1.-1.;.>
+FACT 5; should be 120
+FACT 1; should be 1
+This one loops instead, jumping back to a label it has already passed.
+The counter has to be a permanent variable, because an argument does
+not change between iterations, and the jump is taken while the test
+fails rather than while it holds.
+MCDEF COUNTUP; AS <MCSET P1=1
+%L1.[%P1.]MCSET P1=P1+1
+MCGO L1 UNLESS P1 GR %A1.
+>
+COUNTUP 5;

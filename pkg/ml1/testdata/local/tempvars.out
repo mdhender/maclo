@@ -1,0 +1,7 @@
+The third temporary variable is the depth of nesting, counting the
+call it belongs to.
+(1 (2 (3 bottom)))
+(1 top)
+The first is the number of arguments the call had. Each call has its
+own set, so an inner call cannot disturb an outer one.
+outer=1 [inner=2] outer still=1

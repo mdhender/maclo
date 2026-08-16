@@ -1,0 +1,7 @@
+S6 holds the code of one character that is neither a letter nor a digit
+and is to be treated as though it were, so that it can appear inside an
+atom. Until it is set, no character has its value.
+Before: NOW_POSITION and NOW POSITION
+After: CURRENT_POSITION and NOW POSITION
+Defined: HERE and NOW POSITION
+Off again: NOW_POSITION and NOW POSITION

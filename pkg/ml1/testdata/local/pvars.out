@@ -1,0 +1,6 @@
+More permanent variables can be allocated, and they start at zero.
+42 and 6
+A variable may be named by an expression, which is how an array is
+written.
+99 is the same as 99
+99 reaches P3 through P1

@@ -1,0 +1,12 @@
+MCSKIP MT,<>
+MCINS %.
+Layout keywords name characters that a delimiter structure could not
+otherwise spell. SPACE stands for one space and NL for a newline.
+MCDEF PAIR, SPACE ; AS <[%A1.|%A2.|%A3.]>
+PAIR x,y z;
+A delimiter is consumed, so text after the last one follows straight on.
+MCDEF TAIL, SPACE AS <[%A1.|%A2.]>
+TAIL p,q rest of the line
+MCDEF LINE NL AS <[%A1.]>
+LINE runs to the end of its line
+Done.

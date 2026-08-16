@@ -1,0 +1,20 @@
+MCSKIP MT,<>
+MCDEF NUMBER NL AS <MCSET S20=2
+>
+MCDEF PLAIN NL AS <MCSET S20=1
+>
+MCDEF QUIET NL AS <MCSET S20=0
+>
+S20 says what the listing file is to receive. It starts at zero, so
+this text reaches the output and nothing else.
+NUMBER
+A value of two asks for the number of each output line in front of it.
+
+The empty line above is a line like any other, and is numbered too.
+PLAIN
+A value of one asks for the same text without the numbers.
+QUIET
+Back to zero, and this line is in the output alone.
+NUMBER
+The count is of output lines, not of listed ones, so it has gone on
+while the listing was switched off.

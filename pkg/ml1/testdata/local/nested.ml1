@@ -1,0 +1,9 @@
+MCSKIP MT,<>
+MCINS %.
+Three levels of macro, each calling the next.
+MCDEF INNER; AS <[%A1.]>
+MCDEF MIDDLE; AS <(INNER %A1.;)>
+MCDEF OUTER; AS <{MIDDLE %A1.;}>
+OUTER core;
+MIDDLE core;
+INNER core;

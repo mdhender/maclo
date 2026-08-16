@@ -1,0 +1,15 @@
+MCSKIP MT,<>
+MCINS %.
+The letters before the comma say what a skip keeps: T keeps the text
+between the delimiters and D keeps the delimiters themselves.
+MCDEF WORD AS <REPLACED>
+MCSKIP DT,' '
+'WORD is quoted and kept'
+MCSKIP T,( )
+(WORD is bracketed and the brackets go)
+MCSKIP DROPME
+WORD DROPME WORD
+With neither letter the whole construction disappears, delimiters
+and text alike.
+MCSKIP [ ]
+before [WORD and everything here] after

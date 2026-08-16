@@ -1,0 +1,14 @@
+MCSKIP MT,<>
+MCINS %.
+A secondary delimiter of an operation macro can be renamed.
+MCALTER AS TO :
+MCDEF SHOUT; : <LOUD %A1.>
+SHOUT here;
+MCALTER : TO AS
+MCDEF QUIET; AS <soft %A1.>
+QUIET here;
+A keyword can be renamed too.
+MCALTER WITH TO +
+MCDEF JOIN + ( ; AS <[%A1.]>
+MCALTER + TO WITH
+JOIN( inside ;

@@ -1,0 +1,14 @@
+MCSKIP MT,<>
+MCINS %.
+An invisible startline character can be inserted in front of every
+line of input, so that a newline can be a macro name without the
+first and last lines needing special treatment. Its keyword is SL.
+MCSKIP SL WITH SPACE NL
+MCDEF SL NL AS <%WA1.
+>
+MCSET S1=1
+BEGIN   here is a labelled line
+        this line is indented and goes away
+LOOP    another labelled one
+        and another indented one
+END     the last labelled line

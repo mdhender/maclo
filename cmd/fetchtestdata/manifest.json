@@ -1,0 +1,444 @@
+{
+  "version": 1,
+  "corpora": [
+    {
+      "name": "lowlml1",
+      "url": "https://www.ml1.org.uk/tgz/lowlml1.tar.gz",
+      "format": "tar.gz",
+      "sha256": "b36344357eed37a14f2bc4654b316054f5fd633f227227dbcd56bffd3c37f095",
+      "size": 16300,
+      "dest": "lowlml1",
+      "under": ".downloads",
+      "files": [
+        {
+          "name": "MANIFEST",
+          "size": 74,
+          "sha256": "d710e7797fa378210b6b88e547d970b525b9203b9cafb2dca57b5f603935dd74"
+        },
+        {
+          "name": "ml1ajb.lwl",
+          "size": 57333,
+          "sha256": "ee0ce3aba0ad5f4c6d4aec071e37daa59c3f4d7d6e9a12c9814140683d009500"
+        }
+      ]
+    },
+    {
+      "name": "tests-ac",
+      "url": "https://www.ml1.org.uk/tgz/tests-ac.tar.gz",
+      "format": "tar.gz",
+      "sha256": "63a3759f43f0d57fa8bf5aede177d4b4fe33c4786a9034b28a581ca97b28d6c3",
+      "size": 9849,
+      "dest": "tests-ac",
+      "files": [
+        {
+          "name": "README",
+          "size": 294,
+          "sha256": "82aacb9f9ec43a1c40b7b50f713a1ac88b54274e8881e16163e76d6cc8cf122c"
+        },
+        {
+          "name": "alter.err",
+          "size": 1390,
+          "sha256": "ecf33ed4223fd4d12197d1e63c3451f778f2d1f57884799c165d27ed5af9351c"
+        },
+        {
+          "name": "alter.ml1",
+          "size": 1008,
+          "sha256": "eee4611521cdfcb2083e92e5cfa1f9fb4d2c3d0140ba6614cc259795004c49d2"
+        },
+        {
+          "name": "alter.out",
+          "size": 240,
+          "sha256": "b538911d47835ec79e74ed49256ca712992b7495be13ab172781d911deb84a7a"
+        },
+        {
+          "name": "errors.err",
+          "size": 18676,
+          "sha256": "040aff78917a399135d608949ecedf97b1eb33e7cb1d2c102a9a1bfe1e506ec3"
+        },
+        {
+          "name": "errors.ml1",
+          "size": 2376,
+          "sha256": "313b9750cac7796a1b07b928a3d091ad69f47957cccce7ed63b10daf75b287f0"
+        },
+        {
+          "name": "errors.out",
+          "size": 330,
+          "sha256": "cd8694da037300189788c044ad3556a621a9eb9ccca1bca86eb0ba603a371392"
+        },
+        {
+          "name": "escalate.err",
+          "size": 39,
+          "sha256": "921d8e06cab7a8c937b26e77989b3a23f9359e35562782b3a40a3aca11e4ab3c"
+        },
+        {
+          "name": "escalate.ml1",
+          "size": 1032,
+          "sha256": "3af9c3f553c91fd63c399c4bcf925cfee1393a6c7aec2af642ebf1639b673832"
+        },
+        {
+          "name": "escalate.out",
+          "size": 281,
+          "sha256": "6e1752dcc43c5f524e8cec8e94df1ef422ee06e5ca6090483ec723fd33c799fb"
+        },
+        {
+          "name": "macrotim.err",
+          "size": 606,
+          "sha256": "c58caf5f9204a7759d756a371826ab37e5170c98833be1bbdcfcc037c8585488"
+        },
+        {
+          "name": "macrotim.ml1",
+          "size": 2016,
+          "sha256": "1b4e52725b3c82087ec228395799db2eb0e1f02c87218553c1a7112c92c1e2ba"
+        },
+        {
+          "name": "macrotim.out",
+          "size": 400,
+          "sha256": "7e39fbcef055567aefdcae7fd48bf1d01318d2f44dc936f4205d23ce30bbdd9d"
+        },
+        {
+          "name": "names.err",
+          "size": 1419,
+          "sha256": "a236458a51c3b3e893b5c2297ed15e1998aa3aed5d7e3b66455c6e1246b6ab99"
+        },
+        {
+          "name": "names.ml1",
+          "size": 368,
+          "sha256": "1dcf0b7a09146dd9176cd7d76f96d1c00b2189c9958bc5a7cf0b9c4c43dce31d"
+        },
+        {
+          "name": "names.out",
+          "size": 178,
+          "sha256": "179dbe3142ceb3070055bcc861fdc4e1d2205d226fdde0c004e626a5bb5f91de"
+        },
+        {
+          "name": "overflow.err",
+          "size": 371,
+          "sha256": "fe2cbc7264e6c2568326a364769a5ef65f8627f8aeae17f82741fd8d4b840a94"
+        },
+        {
+          "name": "overflow.ml1",
+          "size": 217,
+          "sha256": "f3de2a18f2c0d8eeb42b0179292a061120dbb84fc4f8d16ab60e95df7c0212bd"
+        },
+        {
+          "name": "overflow.out",
+          "size": 151,
+          "sha256": "fd552fc04a1cd58fed7bc1f9007c56421ffe9247ef0c09777e15e52ff19af8dc"
+        },
+        {
+          "name": "override.err",
+          "size": 40,
+          "sha256": "13f1284dfd6e494bb37b80470387a409fabc479b702285781d4aa157324a8bb5"
+        },
+        {
+          "name": "override.ml1",
+          "size": 1310,
+          "sha256": "c1c5ff65c1d439557d929f4c8f142148e9f9d9764bde1a13df224ce7f65a03cc"
+        },
+        {
+          "name": "override.out",
+          "size": 225,
+          "sha256": "e2a2efdcd50d8ff671415d3ba9a769f1a85ae6409820afe8a2afc09a645561d7"
+        },
+        {
+          "name": "run.bat",
+          "size": 252,
+          "sha256": "83793be961332378a642bddfc9d406e383cfc0011939ca07fd41cea2dbd756b1"
+        },
+        {
+          "name": "run.cmd",
+          "size": 252,
+          "sha256": "83793be961332378a642bddfc9d406e383cfc0011939ca07fd41cea2dbd756b1"
+        },
+        {
+          "name": "runcontr.bat",
+          "size": 51,
+          "sha256": "1abaeed675055552c28cde2f93a6d35ca7a234d74ea0b27ac151cda73d2e3d50"
+        },
+        {
+          "name": "runtest.bat",
+          "size": 109,
+          "sha256": "8ffd5827f8c2fe3cd0c536f88287dc0da4f845caf717dea8763b3daa4d2236ed"
+        },
+        {
+          "name": "runtest.cmd",
+          "size": 106,
+          "sha256": "732099cf05839a352cdefb273f8bcda9e1852f1119c3ce84369404502bfafc3c"
+        },
+        {
+          "name": "runtest.sh",
+          "size": 190,
+          "sha256": "fbc8e3b5f33ac7cb236aef3f825f05cacd309f0b732d09e5903b91c359b297c8"
+        },
+        {
+          "name": "s.err",
+          "size": 1152,
+          "sha256": "8dcc7db700c693fa241a76e5383c769ae2ddb4bda134a1f3d77868b94452df05"
+        },
+        {
+          "name": "s.ml1",
+          "size": 1198,
+          "sha256": "bd94fd1820af7eff1a803575ca3f4b847df1a42ba4d99fb1f131861819a5483c"
+        },
+        {
+          "name": "s.out",
+          "size": 275,
+          "sha256": "f4112cc94113f87e4793ed68cb69db08ec8c16b04c22bb5415a755d01f9feb91"
+        },
+        {
+          "name": "sets18.ml1",
+          "size": 48,
+          "sha256": "9e0ffd89cbfe8a3baa43aaebd855b0071bf49048baf2dd480222deaa1b660991"
+        },
+        {
+          "name": "skipins.err",
+          "size": 39,
+          "sha256": "e7dfb3e284be8e4486ba24e08e19b15d5b7acffb2fe76affbd5bc90c8a9c3f4d"
+        },
+        {
+          "name": "skipins.ml1",
+          "size": 697,
+          "sha256": "f28f24f842d9b7a1d7c647337e9db5e4454323ee40bbd75a6a7912b58415dd33"
+        },
+        {
+          "name": "skipins.out",
+          "size": 153,
+          "sha256": "0d8d81aca72db47259bf455fb4f1c2c6a589204fe1024328b01c0dc251e787cf"
+        },
+        {
+          "name": "strings.err",
+          "size": 1426,
+          "sha256": "06baa45d7099d192b3f36aaaaf298ef484b37b1406e1eccb8b59486c6d6e1a29"
+        },
+        {
+          "name": "strings.ml1",
+          "size": 713,
+          "sha256": "94246695065330f9066660f8e5e0c60fb48a7086e333d1ee9bf0c4169b6d3ebb"
+        },
+        {
+          "name": "strings.out",
+          "size": 193,
+          "sha256": "214f7a93f265f4230af8186998aa4d99a5b9346ce9742976d8a26acb1eceeb17"
+        },
+        {
+          "name": "structur.err",
+          "size": 39,
+          "sha256": "0fe87d336d529ed3831bce952c223afa1dc6b79f13b47cbad07cf2e6b30076e0"
+        },
+        {
+          "name": "structur.ml1",
+          "size": 1737,
+          "sha256": "48806e964b8d3a1f378001713924f7c3f2d8e11bb794b5dc1ccdac8875edec1c"
+        },
+        {
+          "name": "structur.out",
+          "size": 237,
+          "sha256": "2af5f1af7b79246a02fbb2d8e4a6a38d9b8f9038e068230b4671b5b76a01abe8"
+        }
+      ]
+    },
+    {
+      "name": "lowltest",
+      "url": "https://www.ml1.org.uk/tgz/lowltest.tar.gz",
+      "format": "tar.gz",
+      "sha256": "0e07ed9e8a1c4cf2649f80cce78d7a41cb9bf7319c303de70ab610a3e8adec4b",
+      "size": 4696,
+      "dest": "lowltest",
+      "under": ".downloads",
+      "optional": true,
+      "files": [
+        {
+          "name": "MANIFEST",
+          "size": 79,
+          "sha256": "7d3d8da1e50409c776e350248d99661d6e31f1ba5bda5a835fb3f9a19aea9c23"
+        },
+        {
+          "name": "ltestl4a.lwl",
+          "size": 21289,
+          "sha256": "daf0d2d084efddecbc6be1c72bbbd536c2df4d1a6e9a20dfdd159f06689ec8e6"
+        }
+      ]
+    },
+    {
+      "name": "tests-r",
+      "url": "https://www.ml1.org.uk/zip/tests-r.zip",
+      "format": "zip",
+      "sha256": "0e139a67e5775f72bf8622393e70e183ed0602eea4dd22e99848931e8aafccc3",
+      "size": 16593,
+      "dest": "tests-r",
+      "files": [
+        {
+          "name": "results/alter.err",
+          "size": 1490,
+          "sha256": "d4b1ca6ff4e58fb0bf5cf9d5794ba64bc35e06a7397102ec72d144144ad00bf2"
+        },
+        {
+          "name": "results/alter.out",
+          "size": 246,
+          "sha256": "41ad456452a5ad6c736016648d5bc2662021f7a30e27e3ec3d66dedc5148ab46"
+        },
+        {
+          "name": "results/errors.err",
+          "size": 19924,
+          "sha256": "2b0bd6b798e95d9d290448749e3a2b33375f6d149c0c719b6b6f07dd7370c341"
+        },
+        {
+          "name": "results/errors.out",
+          "size": 341,
+          "sha256": "d18e62644d3196590afbb64e349c6a2e9f7e7fabd3fb8b57e2762d588fae83a7"
+        },
+        {
+          "name": "results/escalate.err",
+          "size": 41,
+          "sha256": "3d332919edefea42740e8a45fb2109f73c2daedb99a40ca0738cdb38a4fb9620"
+        },
+        {
+          "name": "results/escalate.out",
+          "size": 290,
+          "sha256": "82361c183aee95f75d2ed262e8c049957b2a24efd3755095f043d3603f92bd0f"
+        },
+        {
+          "name": "results/macrotim.err",
+          "size": 637,
+          "sha256": "f1dd8ea2a8ecc494b880e612a34522b8a9b648a3b900573df6046ef4ade1098f"
+        },
+        {
+          "name": "results/macrotim.out",
+          "size": 415,
+          "sha256": "9f8157a3e8109a2ab132b8f014e6ad3ec92b95450b6de932c59009f1897bf4b8"
+        },
+        {
+          "name": "results/names.err",
+          "size": 1451,
+          "sha256": "190758b215196effd73dbfb95feb4fb6d87344a16fc74f85299ce1118c997aaf"
+        },
+        {
+          "name": "results/names.out",
+          "size": 183,
+          "sha256": "a7184a97c965abc303cc5ee4b3d28481f4ee87c0efaae98f965720c20ae80d6c"
+        },
+        {
+          "name": "results/overflow.err",
+          "size": 390,
+          "sha256": "74bfe06e0996bb46aa0fb8aec2f92dadab1f7025f427458f0fab747b4ce32a24"
+        },
+        {
+          "name": "results/overflow.out",
+          "size": 155,
+          "sha256": "db6d93a905f5bc406e83706571af6c4a07b73cf2154b9df9ba7fa6db84be0b4e"
+        },
+        {
+          "name": "results/override.err",
+          "size": 41,
+          "sha256": "fb470c23917641a397fd24ecffe240827bd963dd9a5cca0b7920c700bd2096ca"
+        },
+        {
+          "name": "results/override.out",
+          "size": 233,
+          "sha256": "68159730300cbb01169b60fcd3be4d90c1c6c021a1caf4d9a59e3414f190c7c7"
+        },
+        {
+          "name": "results/s.err",
+          "size": 1214,
+          "sha256": "7195f1eca1d26aa3b3c211be628cd9bb8f5b2236a1828b29b024bd951f866d5f"
+        },
+        {
+          "name": "results/s.out",
+          "size": 288,
+          "sha256": "f8d6901ac897dc94dd449b1fbd7a64df5f4252135cfaaa7c00884819e5868515"
+        },
+        {
+          "name": "results/skipins.err",
+          "size": 41,
+          "sha256": "ad7b314517b76ade0be477497ba508fbf09f84826ac7ccecb6f946e6d57adb53"
+        },
+        {
+          "name": "results/skipins.out",
+          "size": 158,
+          "sha256": "cd49db335ac2e22c1647265183a71cd55a49a4fb2552f6784e3b113fcaba10c3"
+        },
+        {
+          "name": "results/strings.err",
+          "size": 1535,
+          "sha256": "0163c9a36286d0eceb39f9c424300b8f51bdc5edce61667ff67e5d81d8f0fb9a"
+        },
+        {
+          "name": "results/strings.out",
+          "size": 201,
+          "sha256": "ae674078ef3cdeafdbe3a4dc5b281418449fc3bd256fc1fa5aa02e4ec559f76b"
+        },
+        {
+          "name": "results/structur.err",
+          "size": 41,
+          "sha256": "8a0ee8b148acc76f3aba036342b1b863845b51059ce8a0a0aca8628ed08f2ee0"
+        },
+        {
+          "name": "results/structur.out",
+          "size": 248,
+          "sha256": "30d0a754dce72147de6737c2121cf7cc3cd97b6369f927f6997ab447327d787c"
+        },
+        {
+          "name": "tests/alter.ml1",
+          "size": 1053,
+          "sha256": "4cad7c563857cd53d137b7aae7c5f4dc64123b7683dc51d6848ff3add2057dbd"
+        },
+        {
+          "name": "tests/errors.ml1",
+          "size": 2461,
+          "sha256": "272c2431f0e13a595ebc6191a0ec2ddb9737355603ac2f6a514890f1c4545423"
+        },
+        {
+          "name": "tests/escalate.ml1",
+          "size": 1070,
+          "sha256": "716482ef734ea9edc67ef8c4f3199571a47f99e4fabc801b6c3ec669dc8d132f"
+        },
+        {
+          "name": "tests/macrotim.ml1",
+          "size": 2088,
+          "sha256": "3e767b4d5ee18ca9fd2536c3261c01f745eae503918795833170b60c00637cfd"
+        },
+        {
+          "name": "tests/names.ml1",
+          "size": 377,
+          "sha256": "677758935147be387ce71d22e687dbb878e0d6c3fe8e6468dc12c778b600bc4d"
+        },
+        {
+          "name": "tests/overflow.ml1",
+          "size": 223,
+          "sha256": "b2f6ed8bb85905154115fac7e7849c28556201aad6fd334eec18ca2919f14919"
+        },
+        {
+          "name": "tests/override.ml1",
+          "size": 1367,
+          "sha256": "1fef2037ce461a0e977f53375d33c0a0713a48491dd8841545f87ec4547a1f05"
+        },
+        {
+          "name": "tests/s.ml1",
+          "size": 1256,
+          "sha256": "042c59e356ad89c3d28eedc85c82968fe4939ac8834aa944efd4e0423799cd1b"
+        },
+        {
+          "name": "tests/sets18.ml1",
+          "size": 52,
+          "sha256": "1d784640499ec5878df664f2da4b2f95faa44db296f306d15e133d7c90fcb935"
+        },
+        {
+          "name": "tests/skipins.ml1",
+          "size": 725,
+          "sha256": "4cab355be4fbbc0628d8e599e56f264d6a02d953a6681bd06f57cf0f754cec05"
+        },
+        {
+          "name": "tests/strings.ml1",
+          "size": 749,
+          "sha256": "f9b2f44536f674e5bbd7faefa5cd17022b8318e03ff3ebe7a4d842b2526e605d"
+        },
+        {
+          "name": "tests/structur.ml1",
+          "size": 1790,
+          "sha256": "ced0c0247d5cfabfc4f17d6631e700ee568fbf3bd3880d959434b8cb250041e2"
+        }
+      ],
+      "optional": true
+    }
+  ]
+}

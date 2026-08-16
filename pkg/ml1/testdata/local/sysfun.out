@@ -1,0 +1,10 @@
+MCLENG counts the characters of its argument.
+5 and 0 and 10
+MCSUB takes a substring, counting from one.
+C/XY
+ENT
+A and E
+An empty or impossible range gives nothing at all:
+[] [] []
+The value is not evaluated again:
+[ENT]

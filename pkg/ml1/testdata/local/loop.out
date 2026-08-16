@@ -1,0 +1,13 @@
+A macro label is remembered as it is passed, so a jump can go back to
+a label already seen; one not yet seen is found by a forward search
+from the point of scan. Both work inside a replacement text, so a loop
+there may jump back or recurse. Only the source text is restricted: it
+cannot jump backwards, so a loop must be moved into a macro.
+3 2 1 liftoff
+120 should be 120
+1 should be 1
+This one loops instead, jumping back to a label it has already passed.
+The counter has to be a permanent variable, because an argument does
+not change between iterations, and the jump is taken while the test
+fails rather than while it holds.
+[1][2][3][4][5]

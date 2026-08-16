@@ -1,0 +1,11 @@
+MCSKIP MT,<>
+MCINS %.
+A structure may offer alternatives, and the count of arguments
+says which one was taken.
+MCDEF MEASURE OPT METRES . OR YARDS FEET INCHES ALL ; AS <args=%T1. [%A1.]>
+MEASURE 5 METRES 20 . 3 ;
+MEASURE 2 YARDS 1 FEET 4 INCHES 6 ;
+A delimiter may be its own successor, which gives a list of any length.
+MCDEF SUM N1 OPT + N1 OR ; ALL AS <count=%T1. first=[%A1.]>
+SUM 1 + 2 + 3 + 4 ;
+SUM 9 ;

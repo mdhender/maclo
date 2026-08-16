@@ -1,0 +1,10 @@
+Macros with arguments.
+Hello, world!
+Hello, ML/I!
+left-right
+one/two/three
+A name on its own is a whole delimiter structure, so the simplest
+macro has no arguments and needs no brackets round its replacement
+text: the rest of the line is it.
+an array of 6
+Alice and Alice again

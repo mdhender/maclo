@@ -1,0 +1,17 @@
+The subscript of a macro variable may itself be a variable, so PT1
+means the permanent variable that T1 numbers. A temporary variable in
+that position is what turns a run of permanent variables into an array
+with a moving index. The ten that a process starts with are enough for
+a small one.
+
+[1][4][9][16][25][36]
+Two subscripts at once, one rising and one falling, reverse the array
+in place. The third temporary holds the element being swapped, which
+is what the default capacity of three is for.
+
+[36][25][16][9][4][1]
+The array is global and outlives the call, but the index belongs to
+the call. So a macro that walks the array from inside another walk of
+the same array leaves the outer index where it was. An index kept in a
+permanent variable would not survive this.
+[36 of 4 sums to 86][25 of 4 sums to 86][16 of 4 sums to 86][9 of 4 sums to 86]

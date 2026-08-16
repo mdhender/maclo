@@ -1,0 +1,6 @@
+Layout keywords name characters that a delimiter structure could not
+otherwise spell. SPACE stands for one space and NL for a newline.
+[x|y|z]
+A delimiter is consumed, so text after the last one follows straight on.
+[p|q]rest of the line
+[runs to the end of its line]Done.

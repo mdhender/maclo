@@ -1,0 +1,7 @@
+Text inside the skip brackets reaches the output untouched.
+LOUD
+SHOUT here; is left alone
+Skips nest, and only the outermost pair is removed:
+outer <inner> outer
+An empty skip separates a name from what follows it: LOUD
+It disappears entirely, so abcd becomes one word.

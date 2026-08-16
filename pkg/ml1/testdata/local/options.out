@@ -1,0 +1,7 @@
+A structure may offer alternatives, and the count of arguments
+says which one was taken.
+args=3 [5]
+args=4 [2]
+A delimiter may be its own successor, which gives a list of any length.
+count=4 first=[1]
+count=1 first=[9]

@@ -1,0 +1,8 @@
+The insert flags say what to insert and whether to evaluate it.
+name=[SHOW] one=[first] two=[second] d1=[,] d2=[;]
+A strips the spaces around an argument and B keeps them.
+A=[padded] B=[   padded   ]
+W inserts what was written instead of what it means.
+evaluated=[BANG] written=[LOUD]
+A null flag inserts the value of the expression itself.
+17 20 -17

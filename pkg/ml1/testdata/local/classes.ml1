@@ -1,0 +1,26 @@
+MCSKIP MT,<>
+MCINS %.
+A macro-time test can ask which class a piece of text belongs to.
+MCDEF CLASSIFY; AS <MCGO L1 IF %A1. BC N
+MCGO L2 IF %A1. BC L
+MCGO L3 IF %A1. BC I
+%A1. is none of them<>MCGO L0
+%L1.%A1. is a number<>MCGO L0
+%L2.%A1. is letters<>MCGO L0
+%L3.%A1. is an identifier>
+CLASSIFY 1234;
+CLASSIFY -17;
+CLASSIFY +0;
+CLASSIFY ABC;
+CLASSIFY A1;
+CLASSIFY 1A;
+CLASSIFY a-b;
+The two equality tests are different: one compares text and the
+other compares numbers.
+MCSET P1=7
+MCGO L1 IF 007 EN 7
+they are not numerically equal<>MCGO L2
+%L1.007 and 7 are numerically equal
+%L2.MCGO L3 IF 007 = 7
+007 and 7 are not the same characters
+%L3.done

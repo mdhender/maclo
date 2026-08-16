@@ -1,0 +1,6 @@
+A stop marker ends the search for a delimiter of a construction, and
+is consulted at no other time.
+[if x = y then go to z]The newline above closed the call rather than stopping it: a name
+clash between a delimiter and a stop marker goes to the delimiter,
+and the delimiter was consumed, so this sentence ran on from it.
+[this one is closed]

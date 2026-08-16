@@ -1,0 +1,18 @@
+MCSKIP MT,<>
+MCINS %.
+Input is read from whichever stream S10 names. Switching away from one
+does not forget where it had reached, and the end of a stream that is
+not the revert stream sends input back to the revert stream, which is
+this one.
+MCDEF GREET AS <a macro defined in the first stream>
+MCSET S10=2
+The line above ran on the way back, without being asked for. The
+environment belongs to the process and not to the stream, so the count
+the other one kept is readable here: %P1.
+A stream already read to the end has nothing left to give, so asking
+for it again comes straight back.
+MCSET S10=2
+Adding a hundred to the number rewinds the stream first, which is how
+a set of macros is given the second pass it needs.
+MCSET S10=102
+%P1. passes, and this stream carries on from where it was.

@@ -1,0 +1,15 @@
+MCSKIP MT,<>
+MCINS %.
+The insert flags say what to insert and whether to evaluate it.
+MCDEF LOUD AS <BANG>
+MCDEF SHOW, ; AS <name=[%WD0.] one=[%A1.] two=[%A2.] d1=[%D1.] d2=[%D2.]>
+SHOW first,second;
+A strips the spaces around an argument and B keeps them.
+MCDEF PAIR; AS <A=[%A1.] B=[%B1.]>
+PAIR   padded   ;
+W inserts what was written instead of what it means.
+MCDEF ECHO; AS <evaluated=[%A1.] written=[%WA1.]>
+ECHO LOUD;
+A null flag inserts the value of the expression itself.
+MCSET P1=17
+%P1. %P1+3. %-P1.

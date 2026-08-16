@@ -1,0 +1,11 @@
+The macros that clear the environment take out the local
+constructions and leave the global ones.
+survivor and casualty before
+
+survivor and DROP after
+Note the blank line above: these macros do not have a newline as a
+closing delimiter, so the newline that follows a call of one reaches
+the output like any other character.
+A name can be defined again once it has gone, and the definition has
+to be bracketed or it would be replaced by its own value first.
+replacement at the end

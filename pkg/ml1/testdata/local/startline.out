@@ -1,0 +1,6 @@
+An invisible startline character can be inserted in front of every
+line of input, so that a newline can be a macro name without the
+first and last lines needing special treatment. Its keyword is SL.
+BEGIN   here is a labelled line
+LOOP    another labelled one
+END     the last labelled line

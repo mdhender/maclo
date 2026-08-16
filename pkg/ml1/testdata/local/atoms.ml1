@@ -1,0 +1,12 @@
+MCSKIP MT,<>
+S6 holds the code of one character that is neither a letter nor a digit
+and is to be treated as though it were, so that it can appear inside an
+atom. Until it is set, no character has its value.
+MCDEF CURRENT AS <NOW>
+Before: CURRENT_POSITION and CURRENT POSITION
+MCSET S6=95
+After: CURRENT_POSITION and CURRENT POSITION
+MCDEF CURRENT_POSITION AS <HERE>
+Defined: CURRENT_POSITION and CURRENT POSITION
+MCSET S6=-1
+Off again: CURRENT_POSITION and CURRENT POSITION

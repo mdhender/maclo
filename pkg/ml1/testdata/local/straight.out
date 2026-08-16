@@ -1,0 +1,12 @@
+The M option makes a skip matched: while its closing delimiter is
+being looked for, any skip name that turns up starts a nested skip and
+is matched with its own delimiters first. Without M the skip is
+straight, its own name inside it means nothing, and it ends at the
+first closing delimiter that appears.
+ a PLAIN b c; d
+ a PAIRED b; c d
+A straight skip met inside a matched one is still matched first, so it
+hides everything it swallows, a closing bracket included.
+one PLAIN two > three; four
+The delimiters of a nested skip arrive as ordinary text, because what
+a nest keeps is settled by the outermost skip alone.

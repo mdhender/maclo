@@ -1,0 +1,9 @@
+S20 says what the listing file is to receive. It starts at zero, so
+this text reaches the output and nothing else.
+A value of two asks for the number of each output line in front of it.
+
+The empty line above is a line like any other, and is numbered too.
+A value of one asks for the same text without the numbers.
+Back to zero, and this line is in the output alone.
+The count is of output lines, not of listed ones, so it has gone on
+while the listing was switched off.

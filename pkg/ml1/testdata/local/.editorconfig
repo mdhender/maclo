@@ -1,0 +1,12 @@
+# The golden files in this directory are compared byte for byte, so trailing
+# whitespace and the final newline are part of the expectation rather than
+# noise. Trimming them on save would silently weaken the tests that exist to
+# catch exactly that class of bug.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = false
+trim_trailing_whitespace = false

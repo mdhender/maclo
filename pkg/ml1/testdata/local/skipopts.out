@@ -1,0 +1,8 @@
+The letters before the comma say what a skip keeps: T keeps the text
+between the delimiters and D keeps the delimiters themselves.
+'WORD is quoted and kept'
+WORD is bracketed and the brackets go
+REPLACED  REPLACED
+With neither letter the whole construction disappears, delimiters
+and text alike.
+before  after

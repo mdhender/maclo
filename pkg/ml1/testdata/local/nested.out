@@ -1,0 +1,4 @@
+Three levels of macro, each calling the next.
+{([core])}
+([core])
+[core]
