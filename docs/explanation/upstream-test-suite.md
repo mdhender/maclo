@@ -23,7 +23,7 @@ This extends further than it first appears. The `.ml1` inputs are obviously cove
 `.out` and `.err` files, because they are derived works of copyrighted inputs — generating them
 ourselves by running our own processor would not launder them, since what makes them valuable is
 precisely that they encode someone else's test program. That is why `testdata/`, `.downloads/`,
-`.archive/`, `.notes/`, and `.references/` each carry a `.gitignore` containing `*`, and why
+`.references/`, and `pkg/ml1/engines/` each carry a `.gitignore` that denies everything, and why
 `cmd/fetchtestdata` refuses to write anywhere that is not covered by one.
 
 ## What is safe to commit

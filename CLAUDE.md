@@ -225,8 +225,10 @@ the per-user install relies on.
 
 - Every `.go` file starts with the three-line `maclo - an ML/I macro processor ported to Go` /
   copyright header. Keep it on new files.
-- `testdata/`, `.archive/`, `.notes/`, `.downloads/` each ignore their entire contents (`*` plus
-  `!.gitignore`). This is deliberate: LOWL/L sources and documentation are copyright P.J. Brown and
-  R.D. Eager, and their license forbids redistributing machine-readable copies. Do not commit ML/I
-  sources, test inputs derived from them, or excerpts of the upstream docs into tracked files.
+- `testdata/`, `.downloads/`, `.references/`, and `pkg/ml1/engines/` each hold material that may not
+  be committed, and each carries a `.gitignore` that denies everything and then allows back only the
+  files that belong to us. This is deliberate: LOWL/L sources and documentation are copyright
+  P.J. Brown and R.D. Eager, and their licence permits building the source into a program but not
+  redistributing it. Do not commit ML/I sources, test inputs derived from them, or excerpts of the
+  upstream docs into tracked files.
 - Standard library only, apart from `peterbourgon/ff/v3` for CLI config in `cmd/lasm`.
