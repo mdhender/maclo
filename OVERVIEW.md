@@ -17,11 +17,16 @@ So `ml1` is an emulator that happens to boot a macro processor.
 
 ## What happens when you run `ml1 hello.ml1`
 
-**1. Find the engine.** `pkg/ml1/engine.go` walks the search order (`-s`, `$ML1_LOWL_SOURCE`, the
-per-user directory, then `.downloads/` in a checkout) until it finds `ml1ajb.lwl` — 57KB of LOWL,
-about 4,400 lines. Nothing can happen until it does, which is why `--fetch-engine` exists.
+**1. Find the engine.** There are two commands and they answer this differently. `maclo` runs a
+source compiled into the binary by `//go:embed` — the licence permits building it in, so
+`pkg/ml1/embed.go` does, and `--engines` lists what a given binary carries. `ml1` looks on disk
+instead, walking `-s`, `$ML1_LOWL_SOURCE`, the per-user directory, then `.downloads/` in a checkout,
+because its job is to behave exactly as Appendix AA says whatever it was built with. Either way what
+turns up is `ml1ajb.lwl` — 57KB of LOWL, about 4,400 lines. Nothing can happen until it does.
 
-**2. Compile it, in memory, every time.** Four stages, wired in `assemble` at `pkg/ml1/lowl.go:149`:
+**2. Compile it, in memory, every time.** Even the embedded source is compiled on every run: what
+is built into the binary is P.J. Brown's text, not a machine image of it. Four stages, wired in
+`assemble` at `pkg/ml1/lowl.go:149`:
 
 ```
 ml1ajb.lwl
@@ -93,5 +98,6 @@ bugs got found: `RL` storing an address instead of a distance, and `CSS` popping
 instead of clearing the stack. Both survived a clean assembly *and* a passing conformance suite, and
 neither is the kind of thing you'd spot reading translated Go.
 
-The cost is the one you already met: the engine is a runtime dependency that can't legally ship in
-the binary.
+The cost is the one you already met. The engine can be built in but not passed on, so a binary from
+this tree is for the machine that built it, and a build with nothing fetched carries no processor at
+all — which still compiles, on purpose, and says so when you run it.

@@ -23,6 +23,7 @@ go run ./cmd/lasm --source file.lowl --test-scanner   # stop after scanning
 go run ./cmd/fetchtestdata               # the engine and the test corpora, into a checkout
 go run ./cmd/ml1 --engine                # where the LOWL source is looked for, and what answers
 go run ./cmd/ml1 --fetch-engine          # install the engine for a user with no checkout
+go run ./cmd/maclo --engines             # what engines this build has compiled into it
 ```
 
 `lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, courtesy of
@@ -180,18 +181,42 @@ runs LOWLTEST L4A from `.downloads/lowltest/ltestl4a.lwl`. That file cannot be c
 test **skips** when it is absent — `go run ./cmd/fetchtestdata -corpus lowltest` turns it on. If you
 touch opcode execution, make sure this one ran rather than skipped.
 
+## Two front ends
+
+`cmd/ml1` implements Appendix AA — single letter options, options and input files interleaved, the
+engine found on disk — and is **not free to be improved**: being a drop-in for the reference
+implementation is the whole of what it is for. `cmd/maclo` has no such obligation, takes ordinary Go
+flags, and runs an engine compiled into the binary. Anything better goes in maclo. Both are thin
+wrappers over `ml1.Run`, and behaviour added to either rather than to `pkg/ml1` is behaviour nothing
+tests.
+
 ## Where the engine comes from
 
-`pkg/ml1/engine.go` owns the question, and it is the only place that answers it. `EnginePaths()`
+Two answers, and `Job` has a field for each. `LOWLSource` is a path and `Engine` is the name of a
+source built into the binary; `LOWLSource` wins if both are set, and with **neither** set `Run`
+searches the file system and *does not consult the embedded engines at all*. That last rule is what
+keeps cmd/ml1 behaving the way its operating instructions say whatever the binary was built with,
+and `TestEmbeddedIsNotConsultedByDefault` is what stops it drifting. maclo fills `Engine` in;
+ml1 leaves both empty.
+
+`pkg/ml1/embed.go` holds the embedding. `//go:embed engines` points at `pkg/ml1/engines/`, whose
+`.gitignore` denies everything and allows back only itself and a `README.md` — the licence permits
+building the source in but not redistributing it, so a `.lwl` must never be committable. **The
+tracked README is load-bearing**: `//go:embed` on a directory with only hidden files fails to
+compile, and a tree with zero engines has to build. `Engines()` lists them newest first by file
+name, which is where ML/I's version lives, and the newest is `DefaultEngine()`.
+
+`pkg/ml1/engine.go` owns the file search. `EnginePaths()`
 returns, in order: `$ML1_LOWL_SOURCE`, then `$ML1_HOME` or the per-user directory (macOS and Windows
 follow `os.UserConfigDir`, elsewhere `$XDG_DATA_HOME/ml1`), then `.downloads/lowlml1/ml1ajb.lwl`
 relative to the working directory. `Job.LOWLSource` overrides all of it. `cmd/ml1` deliberately does
 **not** read the environment itself, so that a program embedding the library finds the same file the
 command does.
 
-`internal/fetch` does the downloading and digest checking for both commands: `cmd/fetchtestdata`
-populates a checkout, and `ml1 --fetch-engine` installs the engine alone for a user who has no
-checkout. It writes only where its caller names, prints nothing (progress goes to
+`internal/fetch` does the downloading and digest checking: `cmd/fetchtestdata` populates a checkout
+— and `InstallEngines` copies the `.lwl` on into `pkg/ml1/engines/`, which is the step that turns
+fetched material into a build input — while `ml1 --fetch-engine` installs the engine alone for a
+user who has no checkout. It writes only where its caller names, prints nothing (progress goes to
 `Options.Progress`), and refuses any destination inside a git working tree that is not covered by a
 `.gitignore` whose first line is `*` — a directory in no repository at all is fine, which is what
 the per-user install relies on.

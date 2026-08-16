@@ -27,6 +27,21 @@ Everything so far. This will become 0.1.0.
 
 ### Getting the engine
 
+- **The engine can be built in.** The licence on the LOWL source permits compiling it into a
+  program; it forbids redistributing the source or the program. So `pkg/ml1/engines/` is embedded
+  with `//go:embed` and holds nothing tracked but a `.gitignore` that denies everything and a
+  `README.md` that exists so the build works when the directory is otherwise empty. A tree with zero
+  engines compiles.
+- `cmd/maclo` is a second front end: ordinary Go flags, and the engine comes from inside the binary.
+  `--engines` lists what a build carries, `--engine` selects one by name or by path, and the newest
+  by file name is the default. A build with none says so, at length, rather than failing obscurely.
+- `cmd/ml1` is unchanged and stays that way. It follows Appendix AA and finds its engine on disk,
+  and `Run` does not consult the embedded engines unless a caller asks for one by name — so what
+  `ml1` does is independent of what the binary was built with.
+- `go run ./cmd/fetchtestdata` now also copies the `.lwl` into the embed directory, so one command
+  still prepares a checkout completely.
+- A binary built from this tree **may not be distributed**. There are no release downloads.
+
 - `ml1 --fetch-engine` downloads the LOWL source of ML/I from ml1.org.uk into a per-user directory,
   verifying every file against a SHA-256 recorded in `internal/fetch/manifest.json` before writing
   anything. This is what makes an installed binary usable; before it, the engine was only ever found

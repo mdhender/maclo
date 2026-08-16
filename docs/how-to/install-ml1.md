@@ -1,48 +1,44 @@
 # Install ML/I
 
-This gets a working `ml1` on your machine. It takes two commands, because the program and the
-processor are separate things: ML/I is distributed as source written in LOWL, this port runs that
-source rather than a translation of it, and the licence on that source forbids shipping a copy of
-it. So the binary is installed from here and the engine is fetched from
-<http://www.ml1.org.uk/>.
+This gets a working macro processor on your machine. There are two commands and two ways to give
+them an engine, and which you want depends on what you are doing:
+
+| you want | use | the engine comes from |
+|---|---|---|
+| a drop-in for the reference implementation | `ml1` | a `.lwl` file on disk, at run time |
+| anything else | `maclo` | inside the binary, put there at build time |
+
+Either way the engine is fetched from <http://www.ml1.org.uk/> rather than shipped. ML/I is
+distributed as LOWL source, this port runs that source rather than a translation of it, and the
+licence permits building the source into a program but not redistributing the source or the program.
+So nothing here carries it, and **nothing you build here may be passed on**.
 
 For *why* it works that way, see
 [running ML/I on the LOWL VM](../explanation/running-ml1-on-the-lowl-vm.md).
 
-## Install the command
+## Build with the engine inside (`maclo`)
 
 ```sh
-go install github.com/maloquacious/ml_i/cmd/ml1@latest
+git clone https://github.com/maloquacious/ml_i && cd ml_i
+go run ./cmd/fetchtestdata
+go build ./cmd/maclo
 ```
 
-Go 1.23 or later. The binary lands in `$(go env GOPATH)/bin`; put that on your `PATH` if it is not
-there already.
+Go 1.23 or later. The fetch checks every file against a SHA-256 recorded in this repository before
+writing anything, and puts `ml1ajb.lwl` in `pkg/ml1/engines/`, which is the directory `//go:embed`
+compiles into the binary.
 
-## Fetch the engine
+Confirm what your binary carries:
 
 ```sh
-ml1 --fetch-engine
+./maclo --engines
 ```
 
 ```
-fetching https://www.ml1.org.uk/tgz/lowlml1.tar.gz
-lowlml1: 2 files in /Users/you/Library/Application Support/ml1
-engine ready: /Users/you/Library/Application Support/ml1/ml1ajb.lwl
+ml1ajb       AJB    57333 bytes  (default)
 ```
 
-Every file is checked against a SHA-256 recorded in this repository before anything is written, so a
-damaged download or a change upstream stops the command rather than installing something unexpected.
-Run it again whenever you like; a second run finds the engine already in place and does nothing.
-
-Confirm what will be used:
-
-```sh
-ml1 --engine
-```
-
-The `->` marks the file that answers.
-
-## Run a program
+Then run a program:
 
 ```sh
 cat > hello.ml1 <<'END'
@@ -51,70 +47,66 @@ MCDEF GREET AS <Hello, ML/I>
 GREET
 END
 
-ml1 hello.ml1
+./maclo hello.ml1
 ```
 
-By default the output goes to the standard output and anything ML/I has to say about the run goes to
-the standard error. `ml1 --help` lists the rest; the options come from
-[Appendix AA](https://www.ml1.org.uk/htmldoc/ml1appaa.html) of the ML/I user's manual, which is also
-the reference for the language itself.
+`maclo -h` lists the options. By default the output goes to the standard output and anything ML/I
+has to say about the run goes to the standard error.
 
-## Put the engine somewhere else
-
-The search order is:
-
-1. `-s <file>` on the command line
-2. `$ML1_LOWL_SOURCE`, naming the file
-3. `$ML1_HOME`, or the per-user directory below, holding `ml1ajb.lwl`
-4. `.downloads/lowlml1/ml1ajb.lwl`, relative to the working directory — a checkout of this
-   repository
-
-The per-user directory is `~/Library/Application Support/ml1` on macOS, `%AppData%\ml1` on Windows,
-and `$XDG_DATA_HOME/ml1` — `~/.local/share/ml1` by default — elsewhere.
-
-To keep several versions of ML/I side by side, fetch once and select with `-s`:
+## Install the AA-compatible command (`ml1`)
 
 ```sh
-ml1 -s /opt/ml1/ml1ajb.lwl hello.ml1
+go install github.com/maloquacious/ml_i/cmd/ml1@latest
+ml1 --fetch-engine
 ```
 
-`--fetch-engine` writes to `$ML1_HOME` when that is set, so pointing it at a directory of your own
-installs there instead:
+`--fetch-engine` downloads the LOWL source into a per-user directory —
+`~/Library/Application Support/ml1` on macOS, `%AppData%\ml1` on Windows, and `$XDG_DATA_HOME/ml1`,
+by default `~/.local/share/ml1`, elsewhere. `ml1 --engine` reports every path it searches and marks
+the one that answers.
+
+`ml1 --help` lists the options, which follow
+[Appendix AA](https://www.ml1.org.uk/htmldoc/ml1appaa.html) of the ML/I user's manual — also the
+reference for the language itself.
+
+## Choose a different engine
+
+`maclo` runs the newest engine it was built with. To use another:
 
 ```sh
-ML1_HOME=/opt/ml1 ml1 --fetch-engine
+./maclo --engine ml1aih hello.ml1          # another one built in, by name
+./maclo --engine /opt/ml1/ml1ajb.lwl hello.ml1   # a file this binary does not carry
 ```
 
-It will not write into a git working tree unless a `.gitignore` there ignores everything, which is
-what keeps the upstream source from being committed by accident.
+A `--engine` argument that is neither a built-in name nor an existing file is refused, and the
+message lists what the binary does have. To build with several, put more than one `.lwl` in
+`pkg/ml1/engines/` and rebuild; the newest by file name becomes the default, so `ml1ajb` wins over
+`ml1aih`.
+
+`ml1` selects with `-s <file>`, `$ML1_LOWL_SOURCE`, or `$ML1_HOME`, in that order, and never uses an
+embedded engine — it behaves the way its operating instructions say it does whatever the binary was
+built with.
 
 ## When it will not run
 
+`no ML/I engine is built into this binary`
+: `maclo` was built with an empty `pkg/ml1/engines/`. That is what `go install` produces, because
+  the module on the Go proxy has no `.lwl` in it — the licence keeps it out. Clone, run
+  `go run ./cmd/fetchtestdata`, and `go build ./cmd/maclo`. Or name a source on disk with
+  `--engine /path/to/ml1ajb.lwl`.
+
 `ml1: cannot read the LOWL source of ML/I`
-: No engine was found. The message lists every path that was tried. Run `ml1 --fetch-engine`, or
-  name a source with `-s`.
+: `ml1` found no engine. The message lists every path it tried. Run `ml1 --fetch-engine`, or name
+  one with `-s`.
 
 `ml1: no home directory to install into`
-: `--fetch-engine` could not work out where to put the file. Set `$ML1_HOME` to a directory you
-  want it in and run it again.
+: `--fetch-engine` could not work out where to put the file. Set `$ML1_HOME` and run it again.
 
 `the archive is not what the manifest describes`
-: The download did not match the recorded digest, and nothing was written. Either the download is
-  damaged — try again — or upstream has changed, which needs a person to look at it. See
+: The download did not match the recorded digest, and nothing was written. Either it is damaged —
+  try again — or upstream has changed, which needs a person to look at it. See
   [fetch the upstream sources](fetch-the-upstream-sources.md).
 
-## Build from a clone instead
-
-If you are working on the port rather than using it, fetch the engine and the test suite together
-and leave both in the checkout:
-
-```sh
-git clone https://github.com/maloquacious/ml_i
-cd ml_i
-go run ./cmd/fetchtestdata
-go run ./cmd/ml1 hello.ml1
-```
-
-That puts the engine in `.downloads/lowlml1/`, which is the fourth entry in the search order, so no
-environment variable is needed. See [fetch the upstream sources](fetch-the-upstream-sources.md) for
-the rest of what a checkout needs.
+`pattern engines: cannot embed directory engines: contains no embeddable files`
+: `pkg/ml1/engines/README.md` was deleted. `//go:embed` needs one non-hidden file in that directory
+  for the build to work with no engines present; restore it from git.

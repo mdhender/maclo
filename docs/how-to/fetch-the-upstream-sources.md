@@ -17,8 +17,14 @@ verifies every file it contains, and only then writes them out:
 
 | what | goes to | why there |
 |---|---|---|
-| `lowlml1` — the LOWL source of ML/I | `.downloads/lowlml1/` | it is the engine, and that is where `ml1.Run` looks for it |
+| `lowlml1` — the LOWL source of ML/I | `.downloads/lowlml1/` | it is the engine, and that is where `ml1` looks for it at run time |
+| the `.lwl` from it, copied | `pkg/ml1/engines/` | `//go:embed` compiles that directory into `maclo` |
 | `tests-ac` — the test suite | `testdata/upstream/tests-ac/` | it is test data |
+
+The engine lands in two places because it is two things. `.downloads/` holds the archive as upstream
+published it, digests and all, and `pkg/ml1/engines/` holds only what is meant to end up inside a
+program — copying the archive wholesale would build upstream's `MANIFEST` into the binary too.
+`-engines <dir>` moves the second one.
 
 The archives are cached in `.downloads/cache/`, and every one of those directories is ignored by
 git. The command refuses to write anywhere else: a destination that is not inside a directory whose
@@ -144,8 +150,10 @@ trustworthy as a golden file.
 
 ```sh
 rm -rf testdata/upstream          # the corpora
-rm -rf .downloads/lowlml1         # the engine
+rm -rf .downloads/lowlml1         # the engine ml1 looks for
+rm -f  pkg/ml1/engines/*.lwl      # the engine maclo is built with
 ```
 
-The tests go back to skipping. Nothing else depends on either, and `go run ./cmd/fetchtestdata`
-puts them back.
+The tests go back to skipping and `maclo` rebuilds with no engine in it, which still compiles —
+that is what the tracked `pkg/ml1/engines/README.md` is for. Nothing else depends on any of it, and
+`go run ./cmd/fetchtestdata` puts them all back.

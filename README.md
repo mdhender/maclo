@@ -9,22 +9,31 @@ assembler and virtual machine — and *runs the original source on it*. What you
 P.J. Brown wrote it, executing on a machine written in Go.
 
 The practical consequence is that the processor is not in this repository, and cannot be: the LOWL
-source is copyright P.J. Brown and R.D. Eager, and its licence forbids redistributing a machine
-readable copy. It is fetched, verified and installed separately. That is one extra command, and it
-is the reason there is one.
+source is copyright P.J. Brown and R.D. Eager. Its licence permits **building** that source into a
+program and forbids redistributing either the source or the program built from it. So the source is
+fetched on the machine that builds, and no binary from here can be handed to anyone else.
 
-## Install
+## Two commands
+
+| | |
+|---|---|
+| `ml1` | follows [Appendix AA](https://www.ml1.org.uk/htmldoc/ml1appaa.html) of the ML/I user's manual option for option, and finds its engine **on disk** at run time. Use it where being a drop-in for the reference implementation matters. |
+| `maclo` | ordinary flags, and the engine is **built into the binary**. Use it otherwise. |
+
+They share the whole processor; they differ only in the command line and in where the engine comes
+from. `ml1` is not free to be improved — that is the point of it — and `maclo` is where anything
+better goes.
+
+## Build
 
 ```sh
-go install github.com/maloquacious/ml_i/cmd/ml1@latest
-ml1 --fetch-engine
+git clone https://github.com/maloquacious/ml_i && cd ml_i
+go run ./cmd/fetchtestdata     # the engine and the test corpora; both gitignored
+go build ./cmd/maclo ./cmd/ml1
 ```
 
-The second command downloads the LOWL source from ml1.org.uk, checks every file against a SHA-256
-recorded here, and installs it in a per-user directory. `ml1 --engine` reports where it looked and
-what it found.
-
-Then:
+The fetch writes `pkg/ml1/engines/ml1ajb.lwl`, which is the directory `//go:embed` compiles in, and
+`.downloads/lowlml1/`, which is where `ml1` looks at run time.
 
 ```sh
 cat > hello.ml1 <<'END'
@@ -33,13 +42,14 @@ MCDEF GREET AS <Hello, ML/I>
 GREET
 END
 
-ml1 hello.ml1        # Hello, ML/I
+./maclo hello.ml1        # Hello, ML/I
+./maclo --engines        # ml1ajb  AJB  57333 bytes  (default)
 ```
 
-`ml1 --help` lists the options, which follow
-[Appendix AA](https://www.ml1.org.uk/htmldoc/ml1appaa.html) of the ML/I user's manual. Full
-instructions, including how to keep several versions side by side, are in
-[Install ML/I](docs/how-to/install-ml1.md).
+`go install` also works, but note what it gets you: the module on the Go proxy has an empty engines
+directory, so the build compiles and carries **no engine**. `maclo` says so and explains how to fix
+it; `ml1` falls back to `ml1 --fetch-engine`, which installs a `.lwl` in a per-user directory at run
+time. Full instructions are in [Install ML/I](docs/how-to/install-ml1.md).
 
 ## Status
 
@@ -86,10 +96,11 @@ buffers, writing nothing to disk and printing nothing; two tests hold it to that
 
 | | |
 |---|---|
-| `cmd/ml1` | the macro processor |
+| `cmd/ml1` | the macro processor, Appendix AA compatible, engine found on disk |
+| `cmd/maclo` | the macro processor, modern flags, engine built in |
 | `cmd/lasm` | the LOWL assembler and VM on their own, with listings for every stage |
 | `cmd/fetchtestdata` | fetches the engine and the test suites into a checkout |
-| `pkg/ml1` | the ML/I front end, host boundary and MD-logic |
+| `pkg/ml1` | the ML/I front end, host boundary, MD-logic, and the embedded engines |
 | `pkg/lowl` | the LOWL scanner, parser, assembler and VM |
 | `pkg/postfix` | infix → postfix, for the assembler's `OF(...)` expressions |
 | `internal/fetch` | download and digest verification, shared by the two commands |
@@ -107,21 +118,24 @@ buffers, writing nothing to disk and printing nothing; two tests hold it to that
 ## Developing
 
 ```sh
-git clone https://github.com/maloquacious/ml_i && cd ml_i
 go run ./cmd/fetchtestdata   # the engine and the test suite; both are gitignored
 go test ./...                # green except TestGoldenUpstream, as above
 ```
 
 Without that fetch there is no processor, so the tests that need one **skip** rather than fail. A
-skip and a failure are different things; check which you are looking at.
+skip and a failure are different things; check which you are looking at. A tree with no engine still
+compiles, which is deliberate and is why `pkg/ml1/engines/README.md` is tracked: `//go:embed` needs
+one non-hidden file in that directory to exist.
 
 ## Licence and copyright
 
 The Go code here is [MIT licensed](LICENSE), copyright Michael D Henderson.
 
 **ML/I is not.** ML/I, its LOWL and L sources, its test suite and its documentation are copyright
-P.J. Brown and R.D. Eager, and are not redistributed by this repository — not in the tree, not in
-the binary, and not in a release. What is committed instead is
+P.J. Brown and R.D. Eager, and are not redistributed by this repository. The licence permits
+building the source into a program, which is what `//go:embed` does, and forbids redistributing the
+source or that program — so nothing upstream is committed here, and **a binary built from this tree
+may not be passed on**. There are no release downloads for that reason. What is committed instead is
 [`internal/fetch/manifest.json`](internal/fetch/manifest.json), which records the URL, size and
 SHA-256 of each upstream file: facts about them rather than copies of them. Everything ML/I is
 fetched from <http://www.ml1.org.uk/>, which is the place to get it and where the manual lives.
