@@ -1,0 +1,5 @@
+5:9: error: SET may not appear in the VARS SECTION: it belongs in program (lmap.txt 4.5.5)
+9:1: error: DEC may not appear in a program SECTION: it belongs in VARS (lmap.txt 5.2.1)
+9:13: warning: OTHER is declared and never used
+10:9: error: DC may not appear in a program SECTION: it belongs in data (lmap.txt 6.2.1)
+14:1: warning: NOSUCH is not one of the ten SECTIONs of the logic (lmap.txt 2.4)

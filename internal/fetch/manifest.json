@@ -68,6 +68,27 @@
       ]
     },
     {
+      "name": "lml1",
+      "url": "https://www.ml1.org.uk/tgz/lml1.tar.gz",
+      "format": "tar.gz",
+      "sha256": "13b0ca70fce643a0d38e21e8cc13fa81c626b233bd97ebc2f11478a93728c2f6",
+      "size": 12752,
+      "dest": "lml1",
+      "under": ".downloads",
+      "files": [
+        {
+          "name": "MANIFEST",
+          "size": 68,
+          "sha256": "98d18c7506c8c4a23a4346fd001e791b2896d79f5f6969d8da4e228e817e8b17"
+        },
+        {
+          "name": "ml1aie.l",
+          "size": 51176,
+          "sha256": "ea19b18ee6b04001f00a19ce6063660197c6485f6c449af7b93eebef66795e50"
+        }
+      ]
+    },
+    {
       "name": "tests-ac",
       "url": "https://www.ml1.org.uk/tgz/tests-ac.tar.gz",
       "format": "tar.gz",

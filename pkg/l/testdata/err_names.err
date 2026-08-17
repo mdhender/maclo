@@ -1,0 +1,5 @@
+5:13: error: TOTAL is already declared at 4:13
+6:13: warning: "OVERLONG" is 8 characters: an identifier of L has three to six (lmap.txt 2.3)
+7:13: warning: "AB" is 2 characters: an identifier of L has three to six (lmap.txt 2.3)
+12:21: error: MISSNG is not declared, and is used as a value
+13:15: error: NOWHER is not declared, and is used as a branch target here and at 14:15

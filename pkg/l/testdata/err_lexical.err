@@ -1,0 +1,6 @@
+9:21: error: unterminated quote: no closing ' before the end of the line
+9:23: error: expected a value
+11:9: error: "SETT" is not a statement of L
+13:9: error: "set" is not in capitals: L is written in upper case (lmap.txt 2.1)
+13:13: error: "TOTAL" is not a statement of L
+14:27: error: unclosed ( at the end of the line

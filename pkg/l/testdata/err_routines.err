@@ -1,0 +1,8 @@
+5:13: warning: PARPT is declared and never used
+10:25: error: CALL PLAIN: the subroutine declares no EXIT
+11:9: error: CALL NEEDS needs a PARPT argument
+11:9: error: CALL NEEDS: the subroutine has an EXIT and the call does not name one
+12:19: error: CALL PLAIN takes no argument
+20:9: error: EXIT FROM PLAIN: the subroutine declares no EXIT (lmap.txt 4.1.1.3)
+21:9: error: RETURN FROM NEEDS inside PLAIN: it names the subroutine it is in
+22:9: error: LINK BACK outside a LINKROUTINE (lmap.txt 4.1.2.2)

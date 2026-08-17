@@ -1,0 +1,13 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+TRUE       constant       -    -         -      (L)     1
+FALSE      constant       -    -         -      (L)     1
+ZEROPT     constant       -    -         -      (L)     2
+VARS       section        -    -         -      3:9     1
+LEVEL      variable       NM   VARS      -      4:13    10
+DEPTH      variable       NM   VARS      -      5:13    8
+SPT        variable       PT   VARS      -      6:13    2
+IDPT       variable       PT   VARS      -      7:13    1
+OHSW       variable       SW   VARS      -      8:13    2
+MAIN       section        -    -         -      11:9    1
+BEGIN      label          -    -         -      13:1    1
+DONE       label          -    -         -      34:1    8

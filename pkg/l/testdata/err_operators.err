@@ -1,0 +1,5 @@
+11:22: error: * is only allowed inside OF( ) (lmap.txt 3.3.1)
+12:26: error: / is only allowed inside OF( ) (lmap.txt 3.3.1)
+13:21: error: RL( ) is only allowed as an argument of DC or OPMAC (lmap.txt 6.1.1)
+13:24: error: BEGIN is a label and is used as the argument of RL
+14:36: error: a condition joins its relations with all & or all |, not both

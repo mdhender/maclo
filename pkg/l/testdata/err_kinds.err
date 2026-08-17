@@ -1,0 +1,4 @@
+12:25: error: BEGIN is a label and is used as the argument of AD
+13:25: error: TOTAL is a variable and is used as the argument of BLOCK
+14:15: error: TOTAL is a variable and is used as a branch target
+15:14: error: TOTAL is a variable and is used as the subroutine of a CALL

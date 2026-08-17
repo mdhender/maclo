@@ -1,7 +1,8 @@
 # Fetch the upstream sources
 
-Two things the tests need cannot live in this repository: the ML/I test suite, and the LOWL source
-of ML/I itself, which is the processor the tests run. Both come from <http://www.ml1.org.uk/> and
+Three things the tests need cannot live in this repository: the ML/I test suite, the LOWL source of
+ML/I itself, which is the processor the tests run, and the L source of ML/I, which is what the L
+front end is checked against. Both come from <http://www.ml1.org.uk/> and
 both are fetched by one command. Until you run it, the tests that need them skip.
 
 For *why* they cannot be committed, see [the upstream test suite](../explanation/upstream-test-suite.md).
@@ -20,6 +21,7 @@ verifies every file it contains, and only then writes them out:
 | `lowlml1`, `lowlml1aih`, `lowlml1aig` — the LOWL sources of ML/I | `.downloads/<name>/` | they are the engines, and that is where `ml1` looks at run time |
 | the `.lwl` from each, copied | `pkg/ml1/engines/` | `//go:embed` compiles that directory into `maclo` |
 | `tests-ac` — the test suite | `testdata/upstream/tests-ac/` | it is test data |
+| `lml1` — the **L** source of ML/I | `.downloads/lml1/` | `pkg/l` parses it; `TestML1AIE` skips without it |
 
 There are three engines because ml1.org.uk publishes three versions — AJB, AIH and AIG. `maclo` runs
 the newest unless `--engine` says otherwise; `ml1` takes the first one its search finds.

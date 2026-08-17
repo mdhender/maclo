@@ -1,0 +1,7 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+VARS       section        -    -         -      3:9     1
+OHSW       variable       SW   VARS      -      4:13    2
+ERR        section        -    -         -      7:9     1
+BEGIN      label          -    -         -      9:1     0
+TXTO       label          -    -         -      20:1    1
+SKIP       label          -    -         -      21:1    1

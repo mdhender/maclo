@@ -1,0 +1,9 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+NULLPT     constant       -    -         -      (L)     1
+VARS       section        -    -         -      3:9     1
+SDB        block          -    -         -      4:10    1
+SDBSZ      constant       -    -         -      4:10    1
+TOTAL      variable       NM   VARS      SDB    5:13    3
+DESTPT     variable       PT   VARS      -      7:5     2
+MAIN       section        -    -         -      10:9    1
+BEGIN      label          -    -         -      12:1    1

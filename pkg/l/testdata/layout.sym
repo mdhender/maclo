@@ -1,0 +1,11 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+VARS       section        -    -         -      4:9     1
+INVALS     section        -    -         -      7:9     1
+MAIN       section        -    -         -      10:9    1
+MAINSUBS   section        -    -         -      13:9    1
+OPMACS     section        -    -         -      16:9    1
+DEFSUBS    section        -    -         -      19:9    1
+ERR        section        -    -         -      22:9    1
+ENVPR      section        -    -         -      25:9    1
+MACNAMES   section        -    -         -      28:9    1
+DELS       section        -    -         -      31:9    1

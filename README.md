@@ -100,9 +100,12 @@ buffers, writing nothing to disk and printing nothing; two tests hold it to that
 | `cmd/ml1` | the macro processor, Appendix AA compatible, engine found on disk |
 | `cmd/maclo` | the macro processor, modern flags, engine built in |
 | `cmd/lasm` | the LOWL assembler and VM on their own, with listings for every stage |
+| `cmd/macl` | reads L: check, list, count, and one day run |
+| `cmd/lcheck` | the L front end stage by stage, for working on `pkg/l` |
 | `cmd/fetchtestdata` | fetches the engine and the test suites into a checkout |
 | `pkg/ml1` | the ML/I front end, host boundary, MD-logic, and the embedded engines |
 | `pkg/lowl` | the LOWL scanner, parser, assembler and VM |
+| `pkg/l` | the L scanner, parser and name resolver — no back end |
 | `pkg/postfix` | infix → postfix, for the assembler's `OF(...)` expressions |
 | `internal/fetch` | download and digest verification, shared by the two commands |
 
@@ -113,6 +116,7 @@ No third-party dependencies: `go.mod` has no `require` block.
 - [Install ML/I](docs/how-to/install-ml1.md) — get a working `maclo` or `ml1`
 - [Fetch the upstream sources](docs/how-to/fetch-the-upstream-sources.md) — set up a checkout
 - [Golden tests](docs/reference/golden-tests.md) — the corpora and how they are compared
+- [The L front end](docs/reference/l-front-end.md) — the other porting route, and how far it goes
 - [Running ML/I on the LOWL VM](docs/explanation/running-ml1-on-the-lowl-vm.md) — the source
   versions, the LOWL extensions, the host boundary, the memory layout
 - [The upstream test suite](docs/explanation/upstream-test-suite.md) — why it is not committed

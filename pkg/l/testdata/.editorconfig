@@ -1,0 +1,13 @@
+# The golden files in this directory are compared byte for byte, so trailing
+# whitespace and the final newline are part of the expectation rather than
+# noise. One case depends on it directly: PRTEXT[)    ] carries four
+# significant spaces inside its brackets, and the L manual says spaces inside a
+# bracketed argument mean what they say.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = false
+trim_trailing_whitespace = false

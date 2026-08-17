@@ -1,0 +1,6 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+LCH        constant       -    -         -      (L)     1
+VARS       section        -    -         -      3:9     1
+TOTAL      variable       NM   VARS      -      4:13    4
+MAIN       section        -    -         -      7:9     1
+BEGIN      label          -    -         -      9:1     1

@@ -1,0 +1,9 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+VARS       section        -    -         -      3:9     0
+SDB        block          -    -         -      4:10    0
+SDBSZ      constant       -    -         -      4:10    0
+TOTAL      variable       NM   VARS      SDB    5:13    1
+MAIN       section        -    -         -      9:9     1
+BEGIN      label          -    -         -      10:1    1
+VARIABLES  UNDEFINED      -    -         -      -       1
+ODB        UNDEFINED      -    -         -      -       1

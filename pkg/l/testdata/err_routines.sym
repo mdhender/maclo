@@ -1,0 +1,10 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+NULLPT     constant       -    -         -      (L)     1
+VARS       section        -    -         -      3:9     1
+TOTAL      variable       NM   VARS      -      4:13    2
+PARPT      variable       PT   VARS      -      5:13    0
+MAIN       section        -    -         -      8:9     1
+BEGIN      label          -    -         -      10:1    2
+MAINSUBS   section        -    -         -      17:9    1
+PLAIN      subroutine     -    MAINSUBS  -      19:12   3
+NEEDS      subroutine     -    MAINSUBS  -      25:12   3

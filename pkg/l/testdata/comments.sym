@@ -1,0 +1,7 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+VARS       section        -    -         -      6:9     1
+TOTAL      variable       NM   VARS      -      7:13    6
+INVALS     section        -    -         -      10:9    1
+BEGIN      label          -    -         -      12:1    0
+MAIN       section        -    -         -      18:9    1
+MBEGIN     label          -    -         -      20:8    2

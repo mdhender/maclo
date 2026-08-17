@@ -6,6 +6,11 @@ and run the distributed source unchanged. This repository takes the second route
 scanner, cst, ast, assembler and virtual machine for LOWL, and the intent is for `pkg/ml1` to be a
 front end with a switch selecting a LOWL backend or, later, an L one.
 
+The first route has a front half now. `pkg/l` scans, parses and name-checks L; `cmd/macl` reports on
+a program written in it and `cmd/lcheck` dumps the stages. There is no back end behind either, and
+`ml1.Run` still has the one case — `macl run` is where the other one would arrive, and says so. See
+[the L front end](../reference/l-front-end.md).
+
 This is the background you need before touching either half. For the sources themselves see
 <http://www.ml1.org.uk/>; none of them can be committed here.
 
@@ -18,7 +23,7 @@ Three separate things carry version letters, and they are easy to confuse.
 | LOWL source for ML/I | AJB | `.downloads/lowlml1/ml1ajb.lwl` | the current one on ml1.org.uk |
 | LOWL source for ML/I | AIH | `.references/lowlml1aih.tar.gz` | an older download, kept for comparison |
 | LOWL source for LOWLTEST | L4A | `.downloads/lowltest/ltestl4a.lwl` | the LOWL conformance test |
-| L source for ML/I | AIE | `.downloads/lml1/ml1aie.l` | for the L backend, unused so far |
+| L source for ML/I | AIE | `.downloads/lml1/ml1aie.l` | what `pkg/l` parses; fetched by the `lml1` corpus |
 | the reference implementation | CKQ | `.downloads/ml1` | macOS 4.13, produced every golden file |
 
 Everything in `.downloads/` and `.references/` is gitignored on purpose: the licence forbids
@@ -38,7 +43,7 @@ are in a separate document:
 
 - kernel: *Implementing software using the LOWL language* (`htmldoc/lowlmap.html`)
 - **ML/I extensions: *… Supplement 3: ML/I* (`htmldoc/lowlml1.html`)**
-- the L language: *the L manual* (`.references/lmap.html`)
+- the L language: *Implementing software using the L language* (`.references/lmap.txt`)
 
 Seven statements are extensions rather than kernel, and looking for them in the kernel manual is a
 dead end: `HASH`, `THASH`, `WTHS`, `RL`, `LINKR`, `LINKB` and `ORL`. Supplement 3 also specifies the

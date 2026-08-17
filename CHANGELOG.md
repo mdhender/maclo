@@ -26,6 +26,33 @@ Everything so far. This will become 0.1.0.
 - The `S18` end-of-process report, the `S12` debugging quota, `S19`/`S20` listings, `S6`, permanent
   and temporary variables, multiple input streams, stream switching and rewinding all work.
 
+### The L front end
+
+- `pkg/l` scans, parses and name-checks **L**, the machine-independent language ML/I's logic is
+  written in, as opposed to LOWL, the low level language it is distributed as. There is no back
+  end: this generates no code and runs nothing.
+- Two commands drive it, split the way `cmd/lasm` and `cmd/maclo` are. `cmd/macl` reports on a
+  program — `check summary list symbols source run` — and is where a back end will arrive;
+  `macl run` reserves the word and, for now, runs the front end and then says what is missing and
+  what to use instead. `cmd/lcheck` reports on the parse and dumps the stages.
+- `l.Summary` counts a program: statements by kind, the SECTIONs in order, how deep the two
+  restricted nestings go, and the names by kind. It lives in `pkg/l` and not in a command, so
+  `TestML1AIE` can assert every field of it against the real 2,510 lines rather than against a
+  walk that only a command runs.
+- The whole 2,510-line L source of ML/I (version AIE) parses with no lexical, syntactic or
+  structural diagnostic, and resolves with exactly one — a label in the file spelt with a letter
+  too many, which the LOWL distribution confirms is a typo in AIE rather than a gap here.
+- The listing is a canonical re-render, indented to show the nesting, and it round-trips that whole
+  file byte for byte.
+- Unlike the LOWL front end the ast is a tree: one Go type per statement, compound statements
+  holding their bodies, and the five closing statements folded onto what they close. `pkg/l/stmt`
+  is a single table rather than the enum, stringer and lookup map the LOWL side keeps in step by
+  hand, and every stage accumulates diagnostics instead of stopping at the first.
+- Nothing under `pkg/l` writes a file or touches a process stream; every listing takes an
+  `io.Writer`, and the only callers of `os.Create` are `cmd/macl` and `cmd/lcheck`, each on a path
+  the user named. Both have a test that runs every subcommand from a temporary directory and
+  requires it to be empty afterwards.
+
 ### Getting the engine
 
 - **The engine can be built in.** The licence on the LOWL source permits compiling it into a
@@ -67,6 +94,11 @@ Everything so far. This will become 0.1.0.
   recorded from a later implementation (CKQ) than the newest published source (AJB). Ten of eleven
   cases differ on that skew alone, seven of them by a single blank line. It is left failing rather
   than skipped so that it stays measured.
+
+- `pkg/l/testdata` is an original L corpus, written from the L manual, compared byte for byte, with
+  one case per lexical trap and one per diagnostic. `TestML1AIE` runs the front end over the real L
+  source and skips when it has not been fetched; `TestRoundTrip` requires every listing to read back
+  as itself. The `lml1` manifest entry is what fetches the source.
 
 ### Known limitations
 

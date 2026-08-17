@@ -12,6 +12,11 @@ tooling to run LOWL: a scanner, parser, assembler, and virtual machine. See
 `pkg/lowl/README.md` contains the LOWL VM description and the full opcode table with argument
 conventions — read it before touching opcode handling.
 
+There is a second, unfinished route. `pkg/l` is a **front end for L**, the machine-independent
+language ML/I's logic is *written* in and which is mechanically mapped into LOWL. It scans, parses
+and name-checks; there is no back end and no code generation. See `docs/reference/l-front-end.md`
+before touching it, and `.references/lmap.txt` (the L manual) for the language itself.
+
 ## Commands
 
 ```sh
@@ -24,12 +29,19 @@ go run ./cmd/fetchtestdata               # the engine and the test corpora, into
 go run ./cmd/ml1 --engine                # where the LOWL source is looked for, and what answers
 go run ./cmd/ml1 --fetch-engine          # install the engine for a user with no checkout
 go run ./cmd/maclo --engines             # what engines this build has compiled into it
+go run ./cmd/lcheck --source file.l --listing -   # the L front end, stage by stage
+go run ./cmd/macl summary file.l         # what the front end saw, counted
+go run ./cmd/macl list file.l            # the statement listing, indented by nesting
+go run ./cmd/macl run file.l             # says why it cannot, and what to use instead
+go test ./pkg/l -update                  # rewrite the L goldens (name the package, as with ml1)
 ```
 
 `lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, hand-rolled in
 `cmd/lasm/config.go` over the standard `flag` package; a flag beats the environment, which beats the
 file. `ml1`'s own options are hand-parsed too, because the operating instructions let options and
-input files interleave; the long `--` options are all extensions. `maclo` uses `flag` plainly.
+input files interleave; the long `--` options are all extensions. `maclo`, `lcheck` and `macl` use
+`flag` plainly — `macl` one `FlagSet` per subcommand, re-parsing so that options may follow the file
+name.
 
 ## Golden tests
 
@@ -126,6 +138,64 @@ source under `pkg`, `cmd` and `internal`: only the functions in its `writeSites`
 table **and** in `.gitignore`. Adding an artifact means adding it in all three places. `internal` is
 scanned on the same terms as `pkg` on purpose — a package that only had to move one directory to
 escape the rule would not be covered by it.
+
+## The L front end
+
+`pkg/l` is the other porting route, and only its front half: scanner → cst → ast → sema, with **no
+code generation**. `docs/reference/l-front-end.md` is the reference; read it before changing
+anything here.
+
+**Two commands drive it, and they are the `lasm`/`maclo` split again.** `cmd/lcheck` is the tool for
+working on the front end: `--source`, and a flag per stage that dumps it. `cmd/macl` is the tool for
+working on a program written in L — subcommands `check summary list symbols source run` — and it is
+the one that grows a back end, which is what `macl run` reserves the word for. Anything that reports
+on a *program* rather than on a *parse* goes in `macl`, and the computation behind it goes in
+`pkg/l` rather than in `cmd`: `l.Summary` is there because a command that counted for itself would
+be behaviour nothing tests, and `TestML1AIE` asserts every field of it against the real source.
+
+It mirrors the LOWL pipeline and departs from it in three places, each deliberate:
+
+- **The ast is a tree.** One Go type per statement, compound statements hold their bodies, and the
+  five closers (`ENDSECT ENDBLOCK ENDSUB END ENDCH`) get no types — each is folded onto the
+  statement it closes. `pkg/lowl/ast`'s flat `Op + Parameters` fits LOWL and not L.
+- **`pkg/l/stmt` is one table**, indexed by the enum, read by both `String` and `Lookup`, with
+  `TestTableIndexMatchesKind` holding it together. Do not reintroduce the enum/stringer/lookup trio
+  the LOWL side maintains by hand.
+- **Every stage accumulates diagnostics** and recovers per statement. `pkg/lowl/ast` bails on the
+  first error; over a 2,500-line file that means one typo fixed per run.
+
+**Nothing under `pkg/l` may write a file or touch `os.Stdout`.** Listings take an `io.Writer`, and
+the only callers of `os.Create` are `cmd/lcheck` and `cmd/macl`, each on a path the user named. That
+is why `pkg/l` appears nowhere in `debug_artifacts_test.go`'s `writeSites` and why the root
+`.gitignore` gained no entries. Keep it that way: adding a named artifact under `pkg/l` costs three
+coordinated edits and buys nothing. Both commands have a test that runs every subcommand from a
+temporary directory and requires it to be empty afterwards.
+
+`sema` resolves names and **does not type check**. A variable's type is inferred from its name's
+last two characters and recorded only. Do not "finish" it: the manual's operand rules are subtler
+than the suffix, and a half-done type check is worse than none.
+
+Two seeds in `sema/predefined.go` are conditional or derived rather than listed, and both are that
+way because a list was wrong. `ERBLOC`/`GHSHTB`/`SVEC` are seeded only when a `HETABLES` is present.
+A block's size constant is its name plus `SZ`, derived from the `BLOCKDEC` — the manual names four
+and the logic of ML/I declares five.
+
+### The L corpora
+
+`pkg/l/testdata` is ours, committed, byte-exact, and documented by its own `README.md`. A missing
+`.err`/`.sym` means "there must be none"; the harness **refuses to create a `.lst` that does not
+exist**, so create it empty before `go test ./pkg/l -update`. Do not copy lines out of `ml1aie.l`
+into it — same licence, same rule as everywhere else.
+
+`TestML1AIE` runs the front end over the real L source, `.downloads/lml1/ml1aie.l`, fetched by the
+`lml1` manifest entry. It **skips** when the file is absent, keyed on the file so the skip expires
+by itself. It asserts **exactly one undefined name**, which is a genuine typo in AIE — a `TEST`
+branches to a label whose declaration has a letter too many, and `ml1ajb.lwl` settles that the
+branch is right. **Do not add a known-defects allowlist**: a mechanism for excusing corpus errors is
+a mechanism for hiding regressions. If AIE is ever corrected, that count is what tells you.
+
+`TestRoundTrip` re-renders every case and requires the listing to read back as itself. That is what
+makes the canonical form load-bearing; it currently round-trips all 2,510 lines byte for byte.
 
 ## Opcodes are the spine
 
@@ -234,7 +304,8 @@ the per-user install relies on.
 - Every `.go` file starts with the three-line `maclo - an ML/I macro processor ported to Go` /
   copyright header. Keep it on new files.
 - `testdata/`, `.downloads/`, `.references/`, and `pkg/ml1/engines/` each hold material that may not
-  be committed, and each carries a `.gitignore` that denies everything and then allows back only the
+  be committed — including `.references/lmap.txt` (the L manual) and `.downloads/lml1/ml1aie.l` (the
+  L source of ML/I), and each carries a `.gitignore` that denies everything and then allows back only the
   files that belong to us. This is deliberate: LOWL/L sources and documentation are copyright
   P.J. Brown and R.D. Eager, and their licence permits building the source into a program but not
   redistributing it. Do not commit ML/I sources, test inputs derived from them, or excerpts of the

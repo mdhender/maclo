@@ -1,0 +1,9 @@
+NAME       KIND           TYPE SECTION   BLOCK  DEF     USES
+VARS       section        -    -         -      3:9     1
+TOTAL      variable       NM   VARS      -      4:13    1
+OVERLONG   variable       NM   VARS      -      6:13    1
+AB         variable       NM   VARS      -      7:13    1
+MAIN       section        -    -         -      10:9    1
+BEGIN      label          -    -         -      12:1    0
+MISSNG     UNDEFINED      -    -         -      -       1
+NOWHER     UNDEFINED      -    -         -      -       2
