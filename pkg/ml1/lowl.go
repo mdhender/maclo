@@ -43,7 +43,16 @@ func runLOWL(job Job) (Result, error) {
 	if err != nil {
 		return Result{Fatal: true}, err
 	}
+	return runMachine(job, m)
+}
 
+// runMachine drives an assembled machine, whichever back end built it.
+//
+// Everything below this line is the same for both: the storage, the
+// S-variables, the machine dependent subroutines the host supplies, and the
+// reading back of what the process did. A back end's whole job is to produce
+// the machine.
+func runMachine(job Job, m *vm.VM) (Result, error) {
 	// nothing has been written yet, so the output text is at the start of a
 	// line: the first character to arrive steps S19 and, if a listing was asked
 	// for, carries the number of line one in front of it.

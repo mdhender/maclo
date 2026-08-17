@@ -8,6 +8,7 @@
 *.jpg               binary
 *.l                 text eol=lf
 *.lst               text eol=lf
+*.lwl               text eol=lf
 *.sym               text eol=lf
 *.md                text eol=lf
 *.ml1               text eol=lf

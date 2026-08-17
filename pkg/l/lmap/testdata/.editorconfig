@@ -1,0 +1,12 @@
+# The golden files in this directory are compared byte for byte. Generated
+# LOWL is laid out in fixed columns and ends every line the same way, so
+# trailing whitespace and the final newline are part of the expectation rather
+# than noise.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = false
+trim_trailing_whitespace = false

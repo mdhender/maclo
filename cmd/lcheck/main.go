@@ -6,7 +6,8 @@
 // L source and reports what it finds.
 //
 // It does not compile. cmd/lasm assembles LOWL and produces a machine to run;
-// there is no back end for L yet, so this checks and lists and stops there.
+// this is the tool for working on the front end, so it checks and lists and
+// stops there; the back end is behind cmd/macl.
 //
 //	lcheck --source ml1aie.l                     report diagnostics only
 //	lcheck --source ml1aie.l --listing -         and print the statement listing

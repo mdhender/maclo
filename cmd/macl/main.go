@@ -2,27 +2,27 @@
 // Copyright (c) 2026 Michael D Henderson.
 // All rights reserved.
 
-// Command macl is the front end of the L route, and the place the rest of it
-// will arrive.
+// Command macl is the L route, end to end.
 //
 // There are two ways to port ML/I. cmd/maclo takes the first: it runs the LOWL
 // source ML/I is distributed as, on the virtual machine in pkg/lowl, from an
 // engine built into the binary. macl is the second — L is the language the
-// machine-independent logic of ML/I is written in, and pkg/l reads it. One day
-// macl will run an L program; today there is no back end behind pkg/l, so what
-// it can do is read one and say what it found.
+// machine-independent logic of ML/I is written in, pkg/l reads it, and
+// pkg/l/lmap maps it into LOWL for the same machine to run. So macl reads an
+// L program, says what it found, and runs it.
 //
 //	macl check   ml1aie.l    scan, parse and resolve; report what is wrong
 //	macl summary ml1aie.l    count what the front end saw
 //	macl list    ml1aie.l    print the statement listing, indented by nesting
 //	macl symbols ml1aie.l    print the symbol table
 //	macl source  ml1aie.l    print the program back as L
-//	macl run     ml1aie.l    not yet, and it says so
+//	macl lowl    ml1aie.l    print the LOWL it maps into
+//	macl run     ml1aie.l --source file.ml1    process a macro file with it
 //
 // It is not cmd/lcheck. lcheck is the tool for working on the front end and
 // dumps the stages — the token stream, one line per source line — the way
 // `lasm --test-scanner` does for LOWL. macl reports on the program rather than
-// on the parse, and it is the one that grows a back end. The relationship is
+// on the parse, and it is the one the back end is behind. The relationship is
 // the one cmd/lasm and cmd/maclo already have.
 //
 // Nothing under pkg/l opens a file or touches a process stream, so every
@@ -42,14 +42,18 @@ import (
 	"github.com/mdhender/maclo/pkg/l/sema"
 )
 
-// The exit codes. They are distinct so that a script can tell "your L is
-// wrong" from "macl cannot do that yet", which are going to be different
-// answers for as long as there is no back end.
+// The exit codes.
+//
+// The first three are macl's own and say what it made of the L it was given.
+// run adds the two ML/I reports its own processes with, which are the ones
+// Appendix AA of the user's manual specifies and cmd/maclo returns: 254 when
+// the process ran and found errors in the text, 255 when it could not finish.
+// They are far apart from macl's on purpose -- "your L is wrong" and "the
+// macros in your input are wrong" are different answers.
 const (
-	exitOK        = 0
-	exitErrors    = 1 // the source had errors
-	exitUsage     = 2 // the command line was wrong, or a file would not open
-	exitNoBackEnd = 3 // run, until there is a back end for L
+	exitOK     = 0
+	exitErrors = 1 // the source had errors
+	exitUsage  = 2 // the command line was wrong, or a file would not open
 )
 
 func main() {
@@ -97,6 +101,8 @@ func dispatch(args []string, stdout, stderr io.Writer) int {
 		return report(e, name, rest, func(w io.Writer, r *l.Result) error {
 			return ast.WriteSource(w, r.Program)
 		})
+	case "lowl":
+		return lowlProgram(e, rest)
 	case "run":
 		return runProgram(e, rest)
 	}
@@ -232,21 +238,36 @@ Reads L, the machine-independent language the logic of ML/I is written in.
   list       print the statement listing, indented by nesting
   symbols    print the symbol table
   source     print the program back as L, which is what the round trip checks
-  run        run an L program -- not yet; see below
+  lowl       print the LOWL the program maps into
+  run        map the program and process a macro file with it
   version    print the version of this port
 
-Options, for every command but run:
+Options for the reading commands:
 
   --out file       write the listing here ("-" is the standard output)
   --max-errors n   stop reporting diagnostics after this many; 0 for all
   --quiet          report diagnostics and nothing else
 
-Exit status is 0 when the source is clean, 1 when it has errors, 2 when the
-command line was wrong or a file would not open, and 3 from run.
+Options for run:
 
-There is no back end for L yet, so nothing here compiles or runs anything. To
-run ML/I today use cmd/maclo, which runs an engine built into the binary, or
-cmd/ml1, which follows the operating instructions in Appendix AA of the user's
-manual. cmd/lcheck is the other L program: it dumps the front end's stages and
-is the tool for working on pkg/l rather than on a program written in L.
+  --source file    input text to process; give it again for a second stream
+  --out file       write the results here ("-" is the standard output)
+  --output file    an extra output stream, after the first
+  --debug file     where messages go ("-" is the standard error)
+  --listing file   write the listing S20 controls here
+  --workspace n    words of workspace available to ML/I
+
+    macl run ml1aie2.l --source file.ml1
+
+Exit status is 0 when the source is clean, 1 when it has errors, and 2 when the
+command line was wrong or a file would not open. run also returns what ML/I
+returns: 254 when the process found errors in the text it was processing, 255
+when it could not finish.
+
+The other three ML/I programs in this repository run the LOWL that ML/I is
+distributed as rather than translating the L it is written in: cmd/maclo runs
+an engine built into the binary, cmd/ml1 follows the operating instructions in
+Appendix AA of the user's manual, and cmd/lasm assembles LOWL on its own.
+cmd/lcheck is the other L program: it dumps the front end's stages and is the
+tool for working on pkg/l rather than on a program written in L.
 `

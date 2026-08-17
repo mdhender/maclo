@@ -1,0 +1,70 @@
+        PRGST   'L'
+
+        NB      'CHAIN FROM, WHOSE WHOLE RUNTIME IS TWO SUBROUTINES OF THE MD-LOGIC'
+        NB      'CHANPT AND CHLINK ARE THE TWO THE STATEMENT USES ITSELF'
+
+        DCL     CHANPT
+        DCL     CHLINK
+        DCL     FOUNDPT
+        DCL     TOTAL
+
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'THREE CHAINS: A PLAIN ONE, A LABELLED ENDCH, AND AN EMPTY BODY'
+
+[START]
+        LAA     TABLE,C
+        GOSUB   LOSCHN,0
+        GO      NOTHING,0,X,C
+[LOCH1]
+        LAV     TOTAL,X
+        AAL     1
+        STV     TOTAL,X
+        GOSUB   LOECHN,0
+        GO      LOCH1,0,X,C
+        NB      'THE ENDCH CARRIES A LABEL, WHICH IS WHERE A FAILED TEST CONTINUES FROM'
+        LAV     FOUNDPT,X
+        GOSUB   LOSCHN,0
+        GO      NOTHING,0,X,C
+[LOCH2]
+        LAI     CHANPT,X
+        CAL     0
+        GOEQ    CONTIN,0,X,X
+        LAL     0
+        STV     TOTAL,X
+[CONTIN]
+        GOSUB   LOECHN,0
+        GO      LOCH2,0,X,C
+        NB      'AN EMPTY BODY WALKS TO THE END AND LEAVES CHANPT ON THE LAST ITEM'
+        LAV     FOUNDPT,X
+        GOSUB   LOSCHN,0
+        GO      NOTHING,0,X,C
+[LOCH3]
+        GOSUB   LOECHN,0
+        GO      LOCH3,0,X,C
+        LAV     CHANPT,X
+        STV     FOUNDPT,X
+[NOTHING]
+        GO      START,0,X,X
+
+        NB      'A CHAIN OF TWO ITEMS FOR IT TO WALK'
+
+[TABLE]
+        RL      SECOND,OF(1*LNM+0*LCH)
+[SECOND]
+        CON     0

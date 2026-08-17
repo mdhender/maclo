@@ -4,12 +4,13 @@ There are two ways to port ML/I. One is to implement L, the language ML/I is wri
 translate the logic. The other is to implement LOWL, the low level language ML/I is distributed as,
 and run the distributed source unchanged. This repository takes the second route: `pkg/lowl` is a
 scanner, cst, ast, assembler and virtual machine for LOWL, and the intent is for `pkg/ml1` to be a
-front end with a switch selecting a LOWL backend or, later, an L one.
+front end with a switch selecting a LOWL backend or an L one.
 
-The first route has a front half now. `pkg/l` scans, parses and name-checks L; `cmd/macl` reports on
-a program written in it and `cmd/lcheck` dumps the stages. There is no back end behind either, and
-`ml1.Run` still has the one case — `macl run` is where the other one would arrive, and says so. See
-[the L front end](../reference/l-front-end.md).
+Both routes are finished now. `pkg/l` scans, parses and name-checks L, `pkg/l/lmap` maps it into
+LOWL, and `ml1.Run` has both cases: naming the LOWL source runs the distributed source, and naming
+the L source translates it first. `cmd/macl` is the command that drives the second and `cmd/lcheck`
+dumps its stages. See [the L route](../reference/l-front-end.md) and
+[the L-map](the-l-map.md).
 
 This is the background you need before touching either half. For the sources themselves see
 <http://www.ml1.org.uk/>; none of them can be committed here.

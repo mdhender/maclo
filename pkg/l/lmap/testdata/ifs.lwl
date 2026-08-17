@@ -1,0 +1,125 @@
+        PRGST   'L'
+
+        NB      'IF IN BOTH ITS FORMS, WITH EVERY RELATION AND BOTH JOINING OPERATORS'
+        NB      'NAMES FOR THE CONDITIONS BELOW'
+
+        DCL     LEFTNM
+        DCL     RIGHTNM
+        DCL     SCANPT
+        DCL     MARKSW
+
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'THE CONDITIONS'
+
+        NB      'THE FORM THE MANUAL SAYS MOST L-MAPS RECOGNISE'
+[START]
+        LAV     LEFTNM,X
+        CAL     0
+        GOEQ    AGAIN,0,X,X
+        LAV     LEFTNM,X
+        CAL     0
+        GONE    AGAIN,0,X,X
+        LAV     LEFTNM,X
+        CAV     RIGHTNM,X
+        GOGR    AGAIN,0,X,X
+        LAV     LEFTNM,X
+        CAV     RIGHTNM,X
+        GOGE    AGAIN,0,X,X
+        LAV     LEFTNM,X
+        CAV     RIGHTNM,X
+        GOLE    AGAIN,0,X,X
+        NB      'ONE GUARDED STATEMENT, WHICH NEEDS A JOIN'
+        LAV     LEFTNM,X
+        CAV     RIGHTNM,X
+        GONE    LOIF1,0,X,X
+        LAL     0
+        STV     LEFTNM,X
+[LOIF1]
+        NB      'A BLOCK, WHICH NEEDS THE SAME JOIN'
+        LAV     LEFTNM,X
+        CAL     0
+        GOLE    LOIF2,0,X,X
+        LAV     LEFTNM,X
+        SAL     1
+        STV     LEFTNM,X
+        LAV     RIGHTNM,X
+        AAL     1
+        STV     RIGHTNM,X
+[LOIF2]
+        NB      'BOTH JOINING OPERATORS, IN BOTH READINGS'
+        LAV     LEFTNM,X
+        CAL     0
+        GONE    LOCND3,0,X,X
+        LAV     RIGHTNM,X
+        CAL     0
+        GOEQ    AGAIN,0,X,X
+[LOCND3]
+        LAV     LEFTNM,X
+        CAL     0
+        GOEQ    AGAIN,0,X,X
+        LAV     RIGHTNM,X
+        CAL     0
+        GOEQ    AGAIN,0,X,X
+        LAV     LEFTNM,X
+        CAL     0
+        GONE    LOIF4,0,X,X
+        LAV     RIGHTNM,X
+        CAL     0
+        GONE    LOIF4,0,X,X
+        LAL     0
+        STV     MARKSW,X
+[LOIF4]
+        LAV     LEFTNM,X
+        CAL     0
+        GOEQ    LOCND6,0,X,X
+        LAV     RIGHTNM,X
+        CAL     0
+        GONE    LOIF5,0,X,X
+[LOCND6]
+        LAL     0
+        STV     MARKSW,X
+[LOIF5]
+        NB      'A CHARACTER, WHICH IS COMPARED IN A REGISTER OF ITS OWN'
+        LCI     SCANPT,X
+        CCL     'A'
+        GOEQ    AGAIN,0,X,X
+        LCI     SCANPT,X
+        CCN     SPREP
+        GOEQ    AGAIN,0,X,X
+        LCI     SCANPT,X
+        CCN     NLREP
+        GOEQ    AGAIN,0,X,X
+        LCI     SCANPT,X
+        CCN     STOPCD
+        GOEQ    AGAIN,0,X,X
+        LCI     SCANPT,X
+        LAV     SCANPT,X
+        AAL     OF(LCH)
+        STV     LOTEMP,X
+        CCI     LOTEMP
+        GONE    AGAIN,0,X,X
+        NB      'AN END THAT CARRIES A LABEL'
+        LAV     MARKSW,X
+        CAL     0
+        GONE    LOIF7,0,X,X
+        LAL     0
+        STV     LEFTNM,X
+[AGAIN]
+[LOIF7]
+        GO      START,0,X,X

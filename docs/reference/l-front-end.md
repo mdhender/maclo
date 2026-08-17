@@ -1,21 +1,21 @@
-# The L front end
+# The L route
 
 `pkg/l` scans, parses and name-checks **L**, the machine-independent language the logic of ML/I is
-written in. It does not compile: there is no back end behind it. `cmd/macl` and `cmd/lcheck` drive
-it.
+written in, and `pkg/l/lmap` maps what it produces into LOWL. `cmd/macl` and `cmd/lcheck` drive
+them.
 
 This is the second of the two ways to port ML/I that
 `docs/explanation/running-ml1-on-the-lowl-vm.md` describes. The first — implement LOWL and run the
-distributed source unchanged — is what `pkg/lowl` and `pkg/ml1` do and is the route this repository
-took. This is the front half of the other one.
+distributed source unchanged — is what `pkg/lowl` and `pkg/ml1` do. This page is the front half of
+the other one; [the L-map](../explanation/the-l-map.md) is the back half and why it targets LOWL
+rather than a machine of its own.
 
 ## Commands
 
 There are two, and the split is the one `cmd/lasm` and `cmd/maclo` already have: a tool for working
 on the implementation, and a tool for working on a program.
 
-**`macl` reports on a program.** It is the one that will grow a back end, and `macl run` reserves
-the word for it.
+**`macl` reports on a program**, and runs it.
 
 ```sh
 go run ./cmd/macl check   file.l    # scan, parse and resolve; report what is wrong
@@ -23,18 +23,25 @@ go run ./cmd/macl summary file.l    # count what the front end saw
 go run ./cmd/macl list    file.l    # the statement listing, indented by nesting
 go run ./cmd/macl symbols file.l    # the symbol table
 go run ./cmd/macl source  file.l    # the program back as L, which is what the round trip checks
-go run ./cmd/macl run     file.l    # not yet; it says so, and says what to use instead
+go run ./cmd/macl lowl    file.l    # the LOWL it maps into
+go run ./cmd/macl run     file.l --source text.ml1    # map it, and process a macro file with it
 ```
 
-Each takes `--out PATH` (`-` is the standard output, and the default), `--max-errors N` (0 for all)
-and `--quiet`, and options may come before or after the file name. Diagnostics go to the standard
-error in source order. The exit status is **0** clean, **1** the source had errors, **2** the command
-line was wrong or a file would not open, and **3** from `run`, which is the one code that means the
-program was fine and macl was not.
+The reading commands take `--out PATH` (`-` is the standard output, and the default),
+`--max-errors N` (0 for all) and `--quiet`, and options may come before or after the file name.
+Diagnostics go to the standard error in source order. The exit status is **0** clean, **1** the
+source had errors and **2** the command line was wrong or a file would not open.
 
-`run` is not a stub that refuses to look at the file. Everything short of code generation works, so
-it runs the front end first: a program that will not resolve gets that answer and exit 1, and only a
-clean one reaches the missing half.
+`run` takes the streams instead: `--source` for the text to process (again for a second stream),
+`--out`, `--output`, `--debug`, `--listing` and `--workspace`. It returns what ML/I returns on top
+of macl's own codes — **254** when the process found errors in the text and **255** when it could
+not finish — and the two ranges are far apart because "your L is wrong" and "the macros in your
+input are wrong" are different answers.
+
+`run` refuses a program that does not resolve, and that is the one place the back end is stricter
+than the front end. Reporting and carrying on is right for a listing; it is not right for an engine,
+because a branch to a label nothing declares maps into a branch to a label nothing defines and the
+assembler would then complain about the generated text rather than about the source it came from.
 
 **`lcheck` reports on the parse.** It dumps the stages, the way `lasm --test-scanner` does for LOWL,
 and it is what you reach for when the front end itself is what is wrong.
@@ -49,7 +56,8 @@ And the two that are neither:
 
 ```sh
 go run ./cmd/fetchtestdata -corpus lml1                  # fetch the L source of ML/I
-go test ./pkg/l -update                                  # rewrite the golden files
+go test ./pkg/l -update                                  # rewrite the front end's golden files
+go test ./pkg/l/lmap -update                             # rewrite the L-map's
 ```
 
 Everything a command prints about a program comes from `l.Summary`, in `pkg/l`, rather than from a
@@ -173,6 +181,25 @@ declaration is spelt with a letter too many. The LOWL distribution settles which
 typo — it spells the label the way the branch does. The test asserts the count and does not name the
 symbol, and there is deliberately no known-defects allowlist: a mechanism for excusing corpus errors
 is a mechanism for hiding regressions.
+
+## The back end, in one paragraph
+
+`pkg/l/lmap` takes the tree and the table and produces LOWL, which `pkg/lowl/assembler` then turns
+into a machine. It is two stages, `Map` and `WriteLOWL`, because a statement cannot be rendered
+until the whole program has been laid out: `RL`, the relative-location item the delimiter tables are
+built out of, carries the distance from itself to its target, and the assembler checks the claim
+against its own layout. Nothing under `pkg/l/lmap` writes a file either — `WriteLOWL` takes an
+`io.Writer`, `pkg/ml1` hands it a `bytes.Buffer`, and a generated engine reaches the disk only when
+`macl lowl` was asked for one. [The L-map](../explanation/the-l-map.md) is why it targets LOWL, what
+the manual specifies and what it leaves open.
+
+`pkg/l/lmap/testdata` is ours, committed and byte-exact, on the same terms as `pkg/l/testdata`; see
+its `README.md`. `TestAssembles` is worth more than the goldens put together, because the assembler
+refuses a wrong `RL` distance, an `EXIT` numbered past its subroutine's exits and every undefined
+name. `TestMapML1AIE` maps the real source, assembles it, and holds its data SECTIONs to the
+published LOWL word for word; `TestLBackendMatchesAIG`, in `pkg/ml1`, runs the whole local corpus
+through the engine this produces and through the published one and requires both streams to agree
+to the byte.
 
 ## Where the L source comes from
 

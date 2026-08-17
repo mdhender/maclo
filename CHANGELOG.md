@@ -26,15 +26,25 @@ Everything so far. This will become 0.1.0.
 - The `S18` end-of-process report, the `S12` debugging quota, `S19`/`S20` listings, `S6`, permanent
   and temporary variables, multiple input streams, stream switching and rewinding all work.
 
-### The L front end
+### The L route
 
 - `pkg/l` scans, parses and name-checks **L**, the machine-independent language ML/I's logic is
-  written in, as opposed to LOWL, the low level language it is distributed as. There is no back
-  end: this generates no code and runs nothing.
+  written in, as opposed to LOWL, the low level language it is distributed as.
+- `pkg/l/lmap` is the **L-map**: the back end that translates L into LOWL, which the assembler and
+  machine in `pkg/lowl` then run. "L-map" is the manual's own word for a translation of L into an
+  object language, and every statement in it carries an Action clause saying what that translation
+  has to produce.
+- `ml1.Run` has both back ends. `Job.LSource` names an L source and translates it on the way in;
+  `LOWLSource` and `Engine` name LOWL and run it unchanged. Nothing downstream of the switch knows
+  which ran, and the local corpus produces the same two streams either way.
 - Two commands drive it, split the way `cmd/lasm` and `cmd/maclo` are. `cmd/macl` reports on a
-  program — `check summary list symbols source run` — and is where a back end will arrive;
-  `macl run` reserves the word and, for now, runs the front end and then says what is missing and
-  what to use instead. `cmd/lcheck` reports on the parse and dumps the stages.
+  program — `check summary list symbols source lowl run` — and runs it: `macl run ml1aie2.l
+  --source file.ml1` processes a macro file with an ML/I that was translated out of L on the way
+  in. `cmd/lcheck` reports on the parse and dumps the stages.
+- What the manual leaves to the implementor is written from the manual rather than copied from the
+  published LOWL: the chain-walking `CHAIN FROM` compiles into, the character input and output, the
+  number and text conversions, the layout character table, and the code that runs before the logic
+  does.
 - `l.Summary` counts a program: statements by kind, the SECTIONs in order, how deep the two
   restricted nestings go, and the names by kind. It lives in `pkg/l` and not in a command, so
   `TestML1AIE` can assert every field of it against the real 2,510 lines rather than against a
@@ -48,10 +58,13 @@ Everything so far. This will become 0.1.0.
   holding their bodies, and the five closing statements folded onto what they close. `pkg/l/stmt`
   is a single table rather than the enum, stringer and lookup map the LOWL side keeps in step by
   hand, and every stage accumulates diagnostics instead of stopping at the first.
-- Nothing under `pkg/l` writes a file or touches a process stream; every listing takes an
-  `io.Writer`, and the only callers of `os.Create` are `cmd/macl` and `cmd/lcheck`, each on a path
-  the user named. Both have a test that runs every subcommand from a temporary directory and
-  requires it to be empty afterwards.
+- Nothing under `pkg/l` or `pkg/l/lmap` writes a file or touches a process stream; every listing
+  takes an `io.Writer`, the generated engine is rendered into a buffer, and the only callers of
+  `os.Create` are `cmd/macl` and `cmd/lcheck`, each on a path the user named. Both have a test that
+  runs every subcommand from a temporary directory and requires it to be empty afterwards.
+- The 246 words the data SECTIONs of the L source describe come out identical to the published LOWL
+  of the nearest version, relative-location distances included — and the generated engine agrees
+  with that engine byte for byte, on both streams, over every case of the local corpus.
 
 ### Getting the engine
 

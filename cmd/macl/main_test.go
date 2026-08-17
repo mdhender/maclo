@@ -12,11 +12,10 @@ import (
 	"testing"
 )
 
-// TestExitCodes. The four are distinct so that a script can tell them apart,
-// and the pair worth reading twice is the last two: run on a program that does
-// not resolve is a failure of the program, and run on one that does is a
-// failure of macl. Collapsing them into one code would lose the only
-// distinction the command can currently make.
+// TestExitCodes. The three are distinct so that a script can tell "your L is
+// wrong" from "your command line is wrong", which are answers a reader acts on
+// differently. run adds the two ML/I returns on top of them, and those are far
+// away in the numbering for the same reason.
 func TestExitCodes(t *testing.T) {
 	for _, tc := range []struct {
 		name string
@@ -28,8 +27,6 @@ func TestExitCodes(t *testing.T) {
 		{"a warning is not a failure", []string{"check"}, warnProgram, exitOK},
 		{"an error is", []string{"check"}, errorProgram, exitErrors},
 		{"a listing of a broken program still fails", []string{"list"}, errorProgram, exitErrors},
-		{"run, with nothing to run it with", []string{"run"}, cleanProgram, exitNoBackEnd},
-		{"run, on a program that does not resolve", []string{"run"}, errorProgram, exitErrors},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			source := sourceFile(t, tc.src)
@@ -82,15 +79,21 @@ func TestUsageErrors(t *testing.T) {
 // behind, and none may write to stdout unless that is where its listing was
 // sent.
 func TestWritesNothingUnasked(t *testing.T) {
-	for _, name := range []string{"check", "summary", "list", "symbols", "source", "run"} {
+	for _, name := range []string{"check", "summary", "list", "symbols", "source", "lowl", "run"} {
 		t.Run(name, func(t *testing.T) {
 			dir := t.TempDir()
 			source := filepath.Join(dir, "case.l")
 			write(t, source, cleanProgram)
 			before := entries(t, dir)
 
+			args := []string{name, source, "--quiet"}
+			if name == "lowl" || name == "run" {
+				// neither takes --quiet: they either produce an engine or say
+				// why they could not, and there is nothing to be quiet about
+				args = []string{name, source}
+			}
 			var out, errOut bytes.Buffer
-			dispatch([]string{name, source, "--quiet"}, &out, &errOut)
+			dispatch(args, &out, &errOut)
 
 			if got := entries(t, dir); len(got) != len(before) {
 				t.Errorf("left files behind: %v", got)
@@ -164,22 +167,59 @@ func TestSummaryIsStable(t *testing.T) {
 	}
 }
 
-// TestRunSaysWhereToGoInstead. A command named for something it cannot do owes
-// the reader the reason and the alternative; the alternative exists and is
-// finished, which is the whole point of saying so.
-func TestRunSaysWhereToGoInstead(t *testing.T) {
+// TestRunWantsSomethingToProcess. An L program is not a job on its own: it is
+// the processor, and what a processor needs is a text to process. Saying so is
+// a command line error rather than a failure of the program, because the
+// program has not been looked at yet.
+func TestRunWantsSomethingToProcess(t *testing.T) {
 	source := sourceFile(t, cleanProgram)
 	var out, errOut bytes.Buffer
-	if code := dispatch([]string{"run", source}, &out, &errOut); code != exitNoBackEnd {
-		t.Fatalf("exit %d, want %d", code, exitNoBackEnd)
+	if code := dispatch([]string{"run", source}, &out, &errOut); code != exitUsage {
+		t.Fatalf("exit %d, want %d", code, exitUsage)
 	}
-	for _, want := range []string{"no back end", "maclo", "ml1", "macl summary"} {
-		if !strings.Contains(errOut.String(), want) {
-			t.Errorf("the explanation does not mention %q:\n%s", want, errOut.String())
-		}
+	if !strings.Contains(errOut.String(), "--source") {
+		t.Errorf("the message does not say what is missing:\n%s", errOut.String())
 	}
 	if out.Len() != 0 {
 		t.Errorf("run wrote to stdout:\n%s", out.String())
+	}
+}
+
+// TestRunRefusesAProgramThatDoesNotResolve. The front end reports and keeps
+// going, which is right for a listing; a back end cannot, because a branch to
+// a label nothing declares becomes a branch to a label nothing defines and the
+// complaint would then be about the generated text.
+func TestRunRefusesAProgramThatDoesNotResolve(t *testing.T) {
+	dir := t.TempDir()
+	source := filepath.Join(dir, "case.l")
+	write(t, source, errorProgram)
+	text := filepath.Join(dir, "case.ml1")
+	write(t, text, "nothing to expand\n")
+
+	var out, errOut bytes.Buffer
+	if code := dispatch([]string{"run", source, "--source", text}, &out, &errOut); code != exitErrors {
+		t.Fatalf("exit %d, want %d; stderr:\n%s", code, exitErrors, errOut.String())
+	}
+	if !strings.Contains(errOut.String(), "MISSNG") {
+		t.Errorf("the report does not name what is undeclared:\n%s", errOut.String())
+	}
+}
+
+// TestLowlWritesTheEngine. macl lowl is how the answer is looked at, and the
+// answer has to be something an assembler would take.
+func TestLowlWritesTheEngine(t *testing.T) {
+	source := sourceFile(t, cleanProgram)
+	var out, errOut bytes.Buffer
+	if code := dispatch([]string{"lowl", source}, &out, &errOut); code != exitOK {
+		t.Fatalf("exit %d, want %d; stderr:\n%s", code, exitOK, errOut.String())
+	}
+	for _, want := range []string{"PRGST", "DCL     TOTAL", "PRGEN"} {
+		if !strings.Contains(out.String(), want) {
+			t.Errorf("the engine has no %q in it:\n%s", want, out.String())
+		}
+	}
+	if errOut.Len() != 0 {
+		t.Errorf("lowl wrote to stderr:\n%s", errOut.String())
 	}
 }
 

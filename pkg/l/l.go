@@ -9,8 +9,8 @@
 // language it is distributed as, and run the distributed source unchanged;
 // that is what pkg/lowl does and what pkg/ml1 runs. The other is to implement
 // L and translate the logic. This package is the front end of that second
-// route, and only the front end: it scans, parses, and resolves names. It does
-// not generate code, and there is no back end behind it yet.
+// route: it scans, parses, and resolves names. pkg/l/lmap is the back end
+// behind it, and maps what this produces into LOWL.
 //
 // The stages mirror the LOWL ones and differ where L does:
 //

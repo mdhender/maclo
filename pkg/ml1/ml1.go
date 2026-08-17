@@ -110,6 +110,21 @@ type Job struct {
 	// could be embedded, which is what keeps cmd/ml1's behaviour unchanged.
 	Engine string
 
+	// LSource is the path to the L source of ML/I, which the L back end
+	// translates into LOWL and then assembles.
+	//
+	// L is the machine independent language the logic of ML/I is written in;
+	// the LOWL the other two fields name is what an L-map produced from it.
+	// Naming this one asks for that translation to be done again, here, which
+	// is a different thing from running the answer somebody else got: it is
+	// the route a machine with no LOWL implementation would have to take, and
+	// it is the one that makes the two versions a check on each other.
+	//
+	// It is answered before the other two, because it is the only one of the
+	// three that says which back end is wanted rather than which file it
+	// reads.
+	LSource string
+
 	// DebugWidth is the column at which lines written to Debug are hard
 	// wrapped, mid word, the way the reference implementation does it.
 	// NeverWrap, the zero value, emits each line whole.
@@ -190,16 +205,19 @@ func (j Job) Validate() error {
 // Validation happens before anything else, so a caller that builds a bad Job
 // gets a real error rather than one from deep inside the engine.
 //
-// This is the switch the package was shaped around. There is one backend
-// today, the LOWL one, which assembles the distributed LOWL source of ML/I and
-// runs it; an L backend would be a second case here and nothing else in the
-// package would change.
+// This is the switch the package was shaped around, and it now has both of
+// the cases it was shaped for. The LOWL backend assembles the distributed LOWL
+// source of ML/I and runs it; the L backend translates the L source into LOWL
+// first and then does the same. Nothing else in the package knows which ran.
 func Run(job Job) (Result, error) {
 	if err := job.Validate(); err != nil {
 		return Result{Fatal: true}, err
 	}
 	if job.Workspace == 0 {
 		job.Workspace = DefaultWorkspace
+	}
+	if job.LSource != "" {
+		return runL(job)
 	}
 	return runLOWL(job)
 }

@@ -1,0 +1,67 @@
+        PRGST   'L'
+
+        NB      'BACKSPACE, WHICH IS DEFINED BY THE OFFSET OF A VARIABLE INSIDE ITS BLOCK'
+        NB      'SDB IS THE BLOCK THE MANUAL NAMES, AND EDB SITS INSIDE IT'
+
+        NB      'THE SCANNING DESCRIPTION BLOCK'
+        NB      'the following are stored contiguously'
+        DCL     ARGCT
+        NB      'THE PART OF IT AN ERROR PRINT-OUT USES'
+        NB      'the following are stored contiguously'
+        DCL     STAKPT
+        DCL     ARGPT
+        DCL     DBUGPT
+        DCL     SPT
+        NB      'end of the contiguous block'
+
+        DCL     TVARPT
+        DCL     DBUGSW
+        NB      'end of the contiguous block'
+
+        DCL     TEMPT
+        DCL     TEMPSW
+
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'BOTH FORMS, OVER BOTH THE OUTER BLOCK AND THE NESTED ONE'
+
+        NB      'WITHOUT GIVING, WHICH LEAVES THE ADDRESS IN TEMPT'
+[START]
+        LAV     DBUGPT,X
+        AAL     OF(0*LNM)
+        STV     TEMPT,X
+        LAV     DBUGPT,X
+        AAL     OF(1*LNM)
+        STV     TEMPT,X
+        LAV     DBUGPT,X
+        AAL     OF(4*LNM)
+        STV     TEMPT,X
+        LAV     DBUGPT,X
+        AAL     OF(6*LNM)
+        STV     TEMPT,X
+        NB      'WITH GIVING, WHICH LEAVES THE VALUE'
+        LBV     DBUGPT
+        LAM     OF(2*LNM)
+        STV     TEMPT,X
+        LBV     DBUGPT
+        LAM     OF(5*LNM)
+        STV     TEMPT,X
+        LBV     DBUGPT
+        LAM     OF(6*LNM)
+        STV     TEMPSW,X
+        GO      START,0,X,X

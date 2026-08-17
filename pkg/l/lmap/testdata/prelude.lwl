@@ -1,0 +1,314 @@
+        PRGST   'L'
+
+        NB      'A WHOLE PROGRAM, SO THAT EVERY PART OF THE MD-LOGIC HAS SOMETHING TO REACH'
+        NB      'IT IS NOT ML/I. IT IS THE SMALLEST PROGRAM THAT DECLARES EVERYTHING THE'
+        NB      'L-MAP"S OWN CODE CALLS AND BRANCHES TO, WHICH IS WHAT LETS THE GENERATED'
+        NB      'LOWL BE ASSEMBLED RATHER THAN ONLY COMPARED'
+        NB      'THE NAMES THE MD-LOGIC READS AND WRITES'
+
+        NB      'THE BLOCK AN ERROR PRINT-OUT IS MADE FROM'
+        NB      'the following are stored contiguously'
+        DCL     STAKPT
+        DCL     ARGPT
+        DCL     DBUGPT
+        DCL     SPT
+        DCL     LINECT
+        DCL     DBUGSW
+        NB      'end of the contiguous block'
+
+        DCL     FFPT
+        DCL     LFPT
+        DCL     ENDPT
+        DCL     PVARPT
+        DCL     PVNUM
+        DCL     GLBWSW
+        DCL     SVARPT
+        DCL     ETEMPT
+        DCL     HASHPT
+        DCL     HTABPT
+        DCL     INFFPT
+        DCL     ERIAPT
+        DCL     CHANPT
+        DCL     CHLINK
+        DCL     IDPT
+        DCL     IDLEN
+        DCL     TLINCT
+        DCL     MEVAL
+        DCL     OP1
+        DCL     OPSW
+        DCL     INVOCT
+        DCL     TOTAL
+        DCL     PARNM
+
+        EQU     PARPT,PARNM
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'ONE COMPOSITE NAME, WHICH IS WHERE THE MARKERS COME FROM'
+
+        HASH    'MCDEF'
+        CON     0
+        CON     OF(5*LCH)
+        STR     'MCDEF'
+        RL      DNL,OF(13*LNM+7*LCH)
+        CON     1
+        CON     1
+        CON     4
+        HASH    'MCLENG'
+        CON     0
+        CON     OF(6*LCH)
+        STR     'MCLENG'
+[CWITHS]
+        WTHS
+        CON     OF(1*LCH)
+        STR     '('
+        RL      DNL,OF(4*LNM+0*LCH)
+        CON     1
+        CON     0
+        CON     13
+
+        NB      'THE CHAIN, THE LAYOUT CHARACTERS AND THE HASH TABLE'
+
+        NB      'AN ITEM IS A LINK, A LENGTH, THE TEXT, AND A LINK TO THE NEXT ALTERNATIVE'
+[DNL]
+        CON     0
+        CON     OF(1*LCH)
+        NCH     NLREP
+        CON     0
+[DWITH]
+        RL      DNL,OF(0*LNM-4*LNM)
+        CON     OF(4*LCH)
+        STR     'WITH'
+        RL      DWITH,OF(0*LNM-6*LNM)
+[NUMS]
+        CON     0
+        CON     1
+        CON     OF(LCH)
+        CON     OF(2*LNM+LCH)
+[LETTER]
+        STR     'N'
+        CON     0
+[SPACE]
+        NCH     SPREP
+[LAYCHN]
+        NB      'the layout characters of this implementation'
+        RL      LOLYNL,OF(4*LNM+5*LCH)
+        RL      LORSPA,OF(15*LNM+12*LCH)
+        CON     OF(5*LCH)
+        STR     'SPACE'
+        CON     0
+[LOLYNL]
+        RL      LOLYTB,OF(4*LNM+2*LCH)
+        RL      LORNL,OF(11*LNM+8*LCH)
+        CON     OF(2*LCH)
+        STR     'NL'
+        CON     0
+[LOLYTB]
+        RL      LOLYSL,OF(4*LNM+3*LCH)
+        RL      LORTAB,OF(7*LNM+7*LCH)
+        CON     OF(3*LCH)
+        STR     'TAB'
+        CON     0
+[LOLYSL]
+        RL      LOLAYX,OF(4*LNM+2*LCH)
+        RL      LORSL,OF(3*LNM+5*LCH)
+        CON     OF(2*LCH)
+        STR     'SL'
+        CON     0
+[LOLAYX]
+        NB      'the representations of the layout characters'
+[LORSPA]
+        NCH     SPREP
+[LORNL]
+        NCH     NLREP
+[LORTAB]
+        NCH     TABREP
+[LORSL]
+        NCH     SLREP
+
+        NB      'the hash table, and the limits on local definitions'
+[GHSHTB]
+        THASH
+        CON     0
+        CON     0
+        CON     0
+        CON     0
+        CON     7
+
+        NB      'THE MI-LOGIC"S OWN INITIALISATION, WHICH BEGIN FALLS INTO'
+
+
+[BEGIN]
+        NB      'the MD-logic: what has to be true before the MI-logic starts'
+        LAV     FFPT,X
+        STV     LOERBL,P
+        AAL     OF(6*LNM)
+        STV     LOTEMP,P
+        AAL     OF(10*LNM)
+        STV     PVARPT,P
+        SAV     LOERBL
+        GOSUB   BUMPFF,0
+        LAL     10
+        STV     PVNUM,X
+        LAV     LFPT,X
+        STV     ENDPT,X
+        LAL     7
+        STV     GLBWSW,X
+        NB      'zeroise the permanent variables'
+[LOZERO]
+        BUMP    LOTEMP,OF(LNM)
+        LAV     LOTEMP,X
+        CAV     PVARPT,A
+        GOEQ    LOMARK,0,X,X
+        LAL     0
+        STI     LOTEMP,X
+        GO      LOZERO,0,X,X
+        NB      'the markers, counted down from the one the tables hold'
+[LOMARK]
+        LAA     CWITHS,C
+        STV     LOTEMP,X
+        LAI     LOTEMP,X
+        STV     WTHSMK,P
+        SAL     1
+        STV     WITHMK,P
+        SAL     1
+        STV     EXCLMK,P
+        SAL     1
+        STV     SPCSMK,X
+        LAL     1
+        STV     NLSW,X
+        LAV     SVARPT,X
+        STV     LOSVEC,X
+        NB      'no local definition is in scope yet'
+        LAA     GHSHTB,C
+        AAL     OF(LHV)
+        STV     LOTEMP,X
+[LOLIMS]
+        LAV     ENDPT,X
+        STI     LOTEMP,X
+        BUMP    LOTEMP,OF(LNM)
+        LAI     LOTEMP,X
+        CAL     0
+        GOEQ    LOLIMS,0,X,X
+
+        LAL     0
+        STV     TOTAL,X
+        LAL     0
+        STV     IDLEN,X
+        GO      MBEGIN,0,X,X
+
+        NB      'A LOOP THAT USES EVERY STATEMENT THE MD-LOGIC IS BEHIND'
+
+[MBEGIN]
+        GOSUB   LOREAD,0
+        LAV     SPT,X
+        STV     IDPT,X
+        LAL     OF(LCH)
+        STV     IDLEN,X
+        GOSUB   LOOUTP,0
+        MESS    '$READY$'
+        NB      'MDINIT is null in this L-map'
+        GOSUB   MDFIND,X
+        GOSUB   MDCONV,X
+        GOSUB   MDOP,X
+        GO      ERLOVF,0,X,C
+        LCN     QUTREP
+        GOSUB   MDERCH,X
+        GOSUB   LOERPR,0
+        GOSUB   LONUM,0
+        GO      NOTANUM,0,X,C
+        LCI     SPT,X
+        GOPC    NOTANUM,0,X,X
+        LAA     DWITH,C
+        GOSUB   LOSCHN,0
+        GO      NOTANUM,0,X,C
+[LOCH1]
+        GOSUB   LOECHN,0
+        GO      LOCH1,0,X,C
+        LAA     NUMS,C
+        STV     IDPT,X
+        LAA     LETTER,C
+        STV     IDPT,X
+        LAA     SPACE,C
+        STV     IDPT,X
+        LAA     LAYCHN,C
+        STV     IDPT,X
+        GO      LOGOBC,0,X,X
+        NB      'THE THREE LABELS THE CLASS TEST ANSWERS THROUGH'
+[GOSUC]
+        LAL     1
+        STV     TOTAL,X
+        GO      MBEGIN,0,X,X
+[GOFAIL]
+        LAL     0
+        STV     TOTAL,X
+        GO      MBEGIN,0,X,X
+[NOTANUM]
+        LAL     0
+        STV     TOTAL,X
+        GO      ERLIA,0,X,X
+        NB      'WHERE THE MI-LOGIC REPORTS AN ARGUMENT IT CANNOT USE'
+[ERLIA]
+        CSS
+        MESS    'ARGUMENT HAS ILLEGAL VALUE$'
+        GO      LOHALT,0,X,X
+
+        NB      'THE FOUR SUBROUTINES THE MD-LOGIC CALLS BY NAME'
+
+        SUBR    BUMPFF,PARNM,1
+        LAV     FFPT,X
+        AAV     PARNM
+        STV     FFPT,X
+        LAV     FFPT,X
+        CAV     LFPT,A
+        GOGE    ERLSO,0,X,X
+        EXIT    1,BUMPFF
+
+        SUBR    DECLF,PARNM,1
+        LAV     LFPT,X
+        SAV     PARNM
+        STV     LFPT,X
+        LAV     FFPT,X
+        CAV     LFPT,A
+        GOGE    ERLSO,0,X,X
+        EXIT    1,DECLF
+
+        SUBR    PRNUM,PARNM,1
+        LAV     PARNM,X
+        STV     MEVAL,X
+        GOSUB   MDCONV,X
+        GOSUB   LOERPR,0
+        EXIT    1,PRNUM
+
+
+        NB      'STORAGE OVERFLOW, WHICH THE MACHINE BRANCHES TO ON ITS OWN'
+
+[ERLSO]
+        CSS
+        MESS    'PROCESS ABORTED FOR LACK OF STORAGE$'
+        GO      LOHALT,0,X,X
+        NB      'WHERE ARITHMETIC OVERFLOW IS REPORTED, WHICH DIVISION BY ZERO REACHES'
+[ERLOVF]
+        CSS
+        MESS    'ARITHMETIC OVERFLOW$'
+        GO      LOHALT,0,X,X
+
+        NB      'THE LIST OF CONSTRUCTIONS, WHICH THE FINALISATION CODE CALLS'
+
+        SUBR    PRENV,X,1
+        MESS    '$NOTHING IS DEFINED$'
+        EXIT    1,PRENV

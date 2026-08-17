@@ -22,6 +22,7 @@ const (
 	StageCST
 	StageAST
 	StageSema
+	StageLMap
 )
 
 // String implements the Stringer interface.
@@ -35,6 +36,8 @@ func (s Stage) String() string {
 		return "build"
 	case StageSema:
 		return "check"
+	case StageLMap:
+		return "map"
 	}
 	return fmt.Sprintf("Stage(%d)", int(s))
 }

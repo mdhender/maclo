@@ -60,6 +60,17 @@ corpora, into `.downloads/lowlml1/`, which is one of the places the engine looks
 The local corpus passes. The upstream corpus does not, and is diagnostic rather than a gate: see
 [the version skew](../explanation/running-ml1-on-the-lowl-vm.md).
 
+## The other corpora
+
+Three more golden corpora exist and are not described here, because they are about the L route
+rather than about the processor. `pkg/l/testdata` holds the front end's, `pkg/l/lmap/testdata` the
+L-map's, and each has its own `README.md`; the harnesses are the same shape as this one down to the
+"a missing golden means the stream must be empty" rule and the refusal to create one. `pkg/ml1`
+holds one that spans both: `TestLBackendMatchesAIG` runs the local corpus below through an engine
+translated out of L and through the published LOWL engine and requires both streams to agree byte
+for byte, which is the acceptance test for the whole L route. See
+[the L-map](../explanation/the-l-map.md).
+
 ## The differential suite
 
 `TestExamplesAgainstOracle` in `pkg/ml1/examples_test.go` is a third suite with **no golden files at

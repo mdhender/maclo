@@ -1,0 +1,227 @@
+
+
+
+        NB      'the MD-logic: the code L leaves to the L-map'
+
+        NB      'CHAIN FROM: start a chain, the address of its head in A'
+        SUBR    LOSCHN,PARNM,2
+        STV     CHANPT,P
+        CAL     0
+        GOEQ    LOSCH1,0,X,X
+        LAI     CHANPT,X
+        STV     CHLINK,X
+        EXIT    2,LOSCHN
+[LOSCH1]
+        EXIT    1,LOSCHN
+
+        NB      'ENDCH: step to the next item, if there is one'
+        SUBR    LOECHN,X,2
+        LAV     CHLINK,X
+        CAL     0
+        GOEQ    LOECH1,0,X,X
+        LAV     CHLINK,R
+        AAV     CHANPT
+        STV     CHANPT,X
+        LAI     CHANPT,X
+        STV     CHLINK,X
+        EXIT    1,LOECHN
+[LOECH1]
+        EXIT    2,LOECHN
+
+        NB      'MDERPR: IDLEN characters from IDPT, on the message stream'
+        SUBR    LOERPR,X,1
+        LAV     IDPT,X
+        AAV     IDLEN
+        STV     LOTEMP,X
+[LOEPLP]
+        LAV     IDPT,X
+        CAV     LOTEMP,A
+        GOGE    LOEPEX,0,X,X
+        LCI     IDPT,X
+        CCN     SLREP
+        GOEQ    LOEPSL,0,X,X
+        LCI     IDPT,R
+        GOSUB   MDERCH,X
+[LOEPON]
+        BUMP    IDPT,OF(LCH)
+        GO      LOEPLP,0,X,X
+[LOEPSL]
+        MESS    '(SL)'
+        GO      LOEPON,0,X,X
+[LOEPEX]
+        EXIT    1,LOERPR
+
+        NB      'MDNUM: the atom from IDPT to SPT, as a number, into MEVAL'
+        SUBR    LONUM,X,2
+        LCI     IDPT,X
+        GOND    LONMNO,0,X,X
+        STV     MEVAL,X
+        LAV     IDPT,X
+        STV     LOTEMP,X
+[LONMLP]
+        BUMP    LOTEMP,OF(LCH)
+        LAV     SPT,X
+        CAV     LOTEMP,A
+        GOLT    LONMOK,0,X,X
+        LCI     LOTEMP,X
+        GOND    ERLIA,0,E,X
+        STV     LOSTOR,X
+        LAV     MEVAL,X
+        MULTL   10
+        AAV     LOSTOR
+        STV     MEVAL,X
+        GO      LONMLP,0,X,X
+[LONMOK]
+        EXIT    2,LONUM
+[LONMNO]
+        EXIT    1,LONUM
+
+        NB      'the READ statement: one character, on to the forwards stack'
+        SUBR    LOREAD,X,1
+        LAV     NLSW,X
+        CAL     0
+        GOEQ    LORDGO,0,X,X
+        NB      'a line is starting, so step the count of them'
+        LAV     SVARPT,X
+        SAL     OF(2*LNM)
+        STV     LOTEMP,X
+        LAI     LOTEMP,X
+        AAL     1
+        STI     LOTEMP,X
+        LAV     LINECT,X
+        CAV     TLINCT,X
+        GONE    LORDLC,0,X,X
+        LAI     LOTEMP,X
+        STV     TLINCT,X
+[LORDLC]
+        LAI     LOTEMP,X
+        STV     LINECT,X
+        NB      'S1 asks for the imaginary character that marks a line start'
+        LBV     LOTEMP
+        LAM     OF(LNM)
+        CAL     0
+        GOEQ    LORDGO,0,X,X
+        LCN     SLREP
+        CFSTK
+[LORDGO]
+        LAV     FFPT,X
+        STV     LOTEMP,X
+        GOSUB   MDREAD,X
+        GO      LORDND,0,X,C
+        CFSTK
+        LAL     0
+        STV     NLSW,X
+        LCI     LOTEMP,X
+        CCN     NLREP
+        GONE    LORDEX,0,X,X
+        LAL     1
+        STV     NLSW,X
+[LORDEX]
+        EXIT    1,LOREAD
+        NB      'the end of the input: a newline if the last line wanted one, then the stop code'
+[LORDND]
+        LAV     SPT,X
+        STV     FFPT,X
+        LAV     NLSW,X
+        CAL     0
+        GONE    LORDST,0,X,X
+        LCN     NLREP
+        CFSTK
+[LORDST]
+        LCN     STOPCD
+        CFSTK
+        EXIT    1,LOREAD
+
+        NB      'the OUTPUTID statement: IDLEN characters from IDPT, on the results stream'
+        SUBR    LOOUTP,X,1
+        LAV     IDPT,X
+        AAV     IDLEN
+        STV     LOTEMP,X
+[LOOULP]
+        LAV     IDPT,X
+        CAV     LOTEMP,A
+        GOGE    LOOUEX,0,X,X
+        LCI     IDPT,X
+        CCN     SLREP
+        GOEQ    LOOUON,0,X,X
+        LCI     IDPT,R
+        GOSUB   MDOUCH,X
+[LOOUON]
+        BUMP    IDPT,OF(LCH)
+        GO      LOOULP,0,X,X
+[LOOUEX]
+        EXIT    1,LOOUTP
+
+        NB      'MDGOBC: does the text from INFFPT to ERIAPT belong to the class at IDPT'
+[LOGOBC]
+        LAV     INFFPT,X
+        STV     LOTEMP,X
+        LAL     0
+        STV     LOSTOR,X
+        LCI     IDPT,X
+        CCL     'I'
+        GOEQ    LOBCGO,0,X,X
+        LCI     IDPT,R
+        CCL     'L'
+        GOEQ    LOBCLT,0,X,X
+        LCI     IDPT,R
+        CCL     'N'
+        GONE    ERLIA,0,X,X
+        NB      'a number may begin with any number of signs'
+[LOBCSN]
+        LCI     LOTEMP,X
+        CCL     '+'
+        GOEQ    LOBCSK,0,X,X
+        LCI     LOTEMP,R
+        CCL     '-'
+        GONE    LOBCNM,0,X,X
+[LOBCSK]
+        BUMP    LOTEMP,OF(LCH)
+        GO      LOBCSN,0,X,X
+[LOBCNM]
+        BUMP    LOSTOR,1
+[LOBCLT]
+        BUMP    LOSTOR,1
+        NB      'a null string belongs to nothing'
+[LOBCGO]
+        LAV     LOTEMP,X
+        CAV     ERIAPT,A
+        GOEQ    GOFAIL,0,X,X
+[LOBCLP]
+        LCI     LOTEMP,X
+        GOPC    GOFAIL,0,X,X
+        LAV     LOSTOR,X
+        CAL     0
+        GOEQ    LOBCOK,0,X,X
+        LAL     1
+        STV     LOLENG,X
+        LCI     LOTEMP,X
+        GOND    LOBCTS,0,X,X
+        BUMP    LOLENG,1
+[LOBCTS]
+        LAV     LOLENG,X
+        CAV     LOSTOR,X
+        GONE    GOFAIL,0,X,X
+[LOBCOK]
+        BUMP    LOTEMP,OF(LCH)
+        LAV     LOTEMP,X
+        CAV     ERIAPT,A
+        GOEQ    GOSUC,0,X,X
+        GO      LOBCLP,0,X,X
+
+        NB      'MDHALT, and MDABRT with it: the end of the process'
+[LOHALT]
+        MESS    '$$AT END OF PROCESS: '
+        LBV     SVARPT
+        SBL     OF(2*LNM)
+        LAM     0
+        SAL     1
+        GOSUB   PRNUM,0
+        MESS    ' LINES, '
+        LAV     INVOCT,X
+        GOSUB   PRNUM,0
+        MESS    ' CALLS$'
+        GOSUB   PRENV,0
+        GOSUB   MDQUIT,X
+
+        PRGEN

@@ -1,0 +1,111 @@
+        PRGST   'L'
+
+        NB      'OPMAC, WHICH IS ONE ENTRY OF THE TABLE OF OPERATION MACRO NAMES'
+        NB      'NOTHING IS EXECUTED HERE'
+
+        DCL     CHANPT
+
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'A GLOBAL ONE, A LOCAL ONE, AND ONE WITH A COMPOSITE NAME'
+
+        HASH    'MCDEF'
+        CON     0
+        CON     OF(5*LCH)
+        STR     'MCDEF'
+        RL      DVARS,OF(36*LNM+26*LCH)
+        CON     1
+        CON     1
+        CON     4
+        HASH    'MCDEFG'
+        CON     0
+        CON     OF(6*LCH)
+        STR     'MCDEFG'
+        RL      DVARS,OF(29*LNM+20*LCH)
+        CON     1
+        CON     0
+        CON     4
+        HASH    'MCNODEF'
+        CON     0
+        CON     OF(7*LCH)
+        STR     'MCNODEF'
+        CON     0
+        CON     1
+        CON     1
+        CON     0
+        HASH    'MCLENG'
+        CON     0
+        CON     OF(6*LCH)
+        STR     'MCLENG'
+[CWITHS]
+        WTHS
+        CON     OF(1*LCH)
+        STR     '('
+        RL      DRBRAC,OF(16*LNM+10*LCH)
+        CON     1
+        CON     0
+        CON     13
+        HASH    'MCSUB'
+        CON     0
+        CON     OF(5*LCH)
+        STR     'MCSUB'
+        WTHS
+        CON     OF(1*LCH)
+        STR     '('
+        RL      DRBRAC,OF(7*LNM+4*LCH)
+        CON     1
+        CON     0
+        CON     14
+
+        NB      'THE DELIMITER STRUCTURES THE NAMES ABOVE POINT AT'
+
+[DVARS]
+        CON     0
+        CON     OF(4*LCH)
+        STR     'VARS'
+        RL      DRBRAC,OF(1*LNM+0*LCH)
+[DRBRAC]
+        CON     0
+        CON     OF(1*LCH)
+        STR     ')'
+        CON     0
+        NB      'the representations of the layout characters'
+[LORSPA]
+        NCH     SPREP
+[LORNL]
+        NCH     NLREP
+[LORTAB]
+        NCH     TABREP
+[LORSL]
+        NCH     SLREP
+
+        NB      'the hash table, and the limits on local definitions'
+[GHSHTB]
+        THASH
+        CON     0
+        CON     0
+        CON     0
+        CON     0
+        CON     7
+
+        NB      'SOMETHING THAT READS THEM'
+
+[START]
+        LAA     DVARS,C
+        STV     CHANPT,X
+        GO      START,0,X,X

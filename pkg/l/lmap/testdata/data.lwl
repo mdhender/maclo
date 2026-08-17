@@ -1,0 +1,128 @@
+        PRGST   'L'
+
+        NB      'THE DATA SECTIONS: EVERY KIND OF TABLE ITEM IN ONE TABLE'
+        NB      'NOTHING IS EXECUTED HERE, BUT VARS HAS TO EXIST'
+
+        DCL     CHANPT
+        DCL     CHLINK
+
+
+        NB      'variables the L-map needs and L does not'
+        DCL     SRCPT
+        DCL     DSTPT
+        DCL     LOTEMP
+        DCL     LOSTOR
+        DCL     LOSPIL
+        DCL     LOSPI2
+        DCL     LOLENG
+        DCL     NLSW
+        DCL     LOERBL
+        DCL     LOSVEC
+        DCL     WTHSMK
+        DCL     WITHMK
+        DCL     EXCLMK
+        DCL     SPCSMK
+
+        NB      'A CHAIN, THE NAMES ON IT, AND THE CHARACTERS THEY STAND FOR'
+
+        NB      'AN ITEM IS A LINK, A LENGTH, THE TEXT, AND A LINK TO THE NEXT ALTERNATIVE'
+[HEAD]
+        RL      SECOND,OF(4*LNM+4*LCH)
+[FIRST]
+        RL      THIRD,OF(4*LNM+4*LCH)
+        CON     OF(4*LCH)
+        STR     'WITH'
+        RL      FIRST,OF(0*LNM-6*LNM)
+[SECOND]
+        RL      THIRD,OF(1*LNM+0*LCH)
+[THIRD]
+        CON     0
+        CON     OF(6*LCH)
+        STR     'SPACES'
+        CON     0
+        NB      'A NUMBER, AN OF EXPRESSION, AND A SINGLE CHARACTER OF EACH KIND'
+[NUMS]
+        CON     0
+        CON     1
+        CON     OF(LCH)
+        CON     OF(2*LNM+LCH)
+[LETTER]
+        STR     'N'
+        CON     0
+[SPACE]
+        NCH     SPREP
+[NEWLIN]
+        NCH     NLREP
+        NB      'THE LAYOUT CHARACTERS AND THE HASH TABLE ARE THE L-MAP"S TO SUPPLY'
+[LAYCHN]
+        NB      'the layout characters of this implementation'
+        RL      LOLYNL,OF(4*LNM+5*LCH)
+        RL      LORSPA,OF(15*LNM+12*LCH)
+        CON     OF(5*LCH)
+        STR     'SPACE'
+        CON     0
+[LOLYNL]
+        RL      LOLYTB,OF(4*LNM+2*LCH)
+        RL      LORNL,OF(11*LNM+8*LCH)
+        CON     OF(2*LCH)
+        STR     'NL'
+        CON     0
+[LOLYTB]
+        RL      LOLYSL,OF(4*LNM+3*LCH)
+        RL      LORTAB,OF(7*LNM+7*LCH)
+        CON     OF(3*LCH)
+        STR     'TAB'
+        CON     0
+[LOLYSL]
+        RL      LOLAYX,OF(4*LNM+2*LCH)
+        RL      LORSL,OF(3*LNM+5*LCH)
+        CON     OF(2*LCH)
+        STR     'SL'
+        CON     0
+[LOLAYX]
+        NB      'the representations of the layout characters'
+[LORSPA]
+        NCH     SPREP
+[LORNL]
+        NCH     NLREP
+[LORTAB]
+        NCH     TABREP
+[LORSL]
+        NCH     SLREP
+
+        NB      'the hash table, and the limits on local definitions'
+[GHSHTB]
+        THASH
+        CON     0
+        CON     0
+        CON     0
+        CON     0
+        CON     7
+
+        NB      'SOMETHING THAT READS THE TABLE, SO THE NAMES ARE USED'
+
+[START]
+        LAA     HEAD,C
+        GOSUB   LOSCHN,0
+        GO      DONE,0,X,C
+[LOCH1]
+        GOSUB   LOECHN,0
+        GO      LOCH1,0,X,C
+        LAA     NUMS,C
+        STV     CHANPT,X
+        LAA     LETTER,C
+        STV     CHANPT,X
+        LAA     SPACE,C
+        STV     CHANPT,X
+        LAA     NEWLIN,C
+        STV     CHANPT,X
+        LAA     LAYCHN,C
+        STV     CHANPT,X
+        LAA     GHSHTB,C
+        STV     CHANPT,X
+        LAV     LOSVEC,X
+        STV     CHANPT,X
+        LAV     LOERBL,X
+        STV     CHANPT,X
+[DONE]
+        GO      START,0,X,X

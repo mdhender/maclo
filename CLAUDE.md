@@ -12,10 +12,12 @@ tooling to run LOWL: a scanner, parser, assembler, and virtual machine. See
 `pkg/lowl/README.md` contains the LOWL VM description and the full opcode table with argument
 conventions — read it before touching opcode handling.
 
-There is a second, unfinished route. `pkg/l` is a **front end for L**, the machine-independent
-language ML/I's logic is *written* in and which is mechanically mapped into LOWL. It scans, parses
-and name-checks; there is no back end and no code generation. See `docs/reference/l-front-end.md`
-before touching it, and `.references/lmap.txt` (the L manual) for the language itself.
+There is a second route, and it is finished too. `pkg/l` is a **front end for L**, the
+machine-independent language ML/I's logic is *written* in, and `pkg/l/lmap` is the **L-map**: the
+back end that maps L into LOWL for the same assembler and machine to run. See
+`docs/reference/l-front-end.md` and `docs/explanation/the-l-map.md` before touching either, and
+`.references/lmap.txt` (the L manual) for the language itself — every Action clause in it is the
+specification of one statement's translation.
 
 ## Commands
 
@@ -32,8 +34,10 @@ go run ./cmd/maclo --engines             # what engines this build has compiled 
 go run ./cmd/lcheck --source file.l --listing -   # the L front end, stage by stage
 go run ./cmd/macl summary file.l         # what the front end saw, counted
 go run ./cmd/macl list file.l            # the statement listing, indented by nesting
-go run ./cmd/macl run file.l             # says why it cannot, and what to use instead
+go run ./cmd/macl lowl file.l            # the LOWL the program maps into
+go run ./cmd/macl run file.l --source x.ml1   # map it, then process a macro file with it
 go test ./pkg/l -update                  # rewrite the L goldens (name the package, as with ml1)
+go test ./pkg/l/lmap -update             # rewrite the L-map goldens
 ```
 
 `lasm` flags also come from env vars (`LASM_` prefix) or a JSON file via `--config`, hand-rolled in
@@ -94,8 +98,10 @@ so current behaviour cannot become the specification by accident. `go test ./...
 elsewhere with "flag provided but not defined", so name the package.
 
 The root `.gitignore` deliberately **does not** ignore `*.out` — the golden files use the upstream
-`.out`/`.err` names. Do not add that rule back. `.gitattributes` pins `*.ml1`, `*.out`, `*.err`, and
-`*.lst` to `eol=lf`, which is what makes byte-exact comparison portable.
+`.out`/`.err` names. Do not add that rule back. `.gitattributes` pins `*.ml1`, `*.out`, `*.err`,
+`*.lst` and `*.lwl` to `eol=lf`, which is what makes byte-exact comparison portable. It does **not**
+ignore `*.lwl` either: the L-map's goldens are LOWL and are ours. The engines that may not be
+committed are kept out by `pkg/ml1/engines/.gitignore`, not by an extension rule.
 
 See `docs/reference/golden-tests.md` and `docs/explanation/upstream-test-suite.md`.
 
@@ -141,14 +147,13 @@ escape the rule would not be covered by it.
 
 ## The L front end
 
-`pkg/l` is the other porting route, and only its front half: scanner → cst → ast → sema, with **no
-code generation**. `docs/reference/l-front-end.md` is the reference; read it before changing
-anything here.
+`pkg/l` is the front half of the other porting route: scanner → cst → ast → sema.
+`docs/reference/l-front-end.md` is the reference; read it before changing anything here.
 
 **Two commands drive it, and they are the `lasm`/`maclo` split again.** `cmd/lcheck` is the tool for
 working on the front end: `--source`, and a flag per stage that dumps it. `cmd/macl` is the tool for
-working on a program written in L — subcommands `check summary list symbols source run` — and it is
-the one that grows a back end, which is what `macl run` reserves the word for. Anything that reports
+working on a program written in L — subcommands `check summary list symbols source lowl run` — and
+it is the one the back end is behind. Anything that reports
 on a *program* rather than on a *parse* goes in `macl`, and the computation behind it goes in
 `pkg/l` rather than in `cmd`: `l.Summary` is there because a command that counted for itself would
 be behaviour nothing tests, and `TestML1AIE` asserts every field of it against the real source.
@@ -196,6 +201,55 @@ a mechanism for hiding regressions. If AIE is ever corrected, that count is what
 
 `TestRoundTrip` re-renders every case and requires the listing to read back as itself. That is what
 makes the canonical form load-bearing; it currently round-trips all 2,510 lines byte for byte.
+
+## The L-map
+
+`pkg/l/lmap` is the back end: `Map(prog, tab)` produces a `*Program` of LOWL statements and
+`WriteLOWL(w)` renders it. Two stages, because `RL` carries the distance from itself to its target
+and nothing can be rendered until the whole program has been laid out. `docs/explanation/the-l-map.md`
+is the reference; read it, and read the **Action** clause of the statement you are changing in
+`.references/lmap.txt`, which is the specification.
+
+**The manual is the specification and `ml1aig.lwl` is the answer key**, in that order. The published
+LOWL is what an L-map produced from a source one release away, so it settles design questions the
+manual leaves ambiguous — but it must never be transcribed into a tracked file. Same licence, same
+rule as everywhere else: `prelude.go` is our own text, written from chapter 7.
+
+**Nothing under `pkg/l/lmap` writes a file either**, on the same terms as the rest of `pkg/l`.
+`WriteLOWL` takes an `io.Writer`, `pkg/ml1` gives it a `bytes.Buffer`, and a generated engine
+reaches the disk only through `macl lowl`. A generated `.lwl` is a derivative of `ml1aie.l`: it must
+never go into `pkg/ml1/engines/`, and `InstallEngines` is not taught about it.
+
+Three things are decisions rather than translations, and each is in the manual as one:
+`LPT` and `LSW` both become `LNM` (the data type identity of 3.1.1, and the assembler seeds no other
+length names); `PARPT` and `PARSW` are `EQU`d to `PARNM` (there is one LOWL parameter register, and
+1029 says the three may be equated); and `THEN GO TO` is special-cased (note (c) recommends it, and
+133 of the 203 `IF`s are that shape).
+
+`Job.LSource` is what selects it, and `Run` answers that field before the other two. `runMachine` in
+`pkg/ml1/lowl.go` is the half both back ends share — do not put anything back-end-specific in it.
+
+### The L-map corpus
+
+`pkg/l/lmap/testdata` is ours, committed, byte-exact, with its own `README.md`. Its goldens stop
+where the MD-logic starts, and `mdlogic.lwl` holds that half once; only `prelude.l` names an entry
+point, because the L-map takes the label `BEGIN` for the initialisation.
+
+`TestAssembles` is worth more than the goldens put together: the assembler refuses a wrong `RL`
+distance, an `EXIT` numbered past its subroutine's exits, an operand of the wrong shape, and every
+undefined name. If you change anything about layout, that is the test that will tell you.
+
+`TestMapML1AIE` maps the real source and holds its **data SECTIONs to the published LOWL word for
+word** — 246 of them, `RL` distances included. The code sections are deliberately *not* compared:
+AIG merges statements and reuses the accumulator, this L-map does not, and a line diff would be
+measuring style. What is compared past the tables is the set of subroutines, and then behaviour, by
+`TestLBackendMatchesAIG` in `pkg/ml1`.
+
+**The L source as shipped does not resolve**, and the back end refuses it — that is the point of the
+refusal, not a limitation. Mapping it needs a corrected copy at `.downloads/lml1/ml1aie2.l`, which
+the archive does not contain and this repository cannot ship, so the tests that need it skip on the
+file and say how to make one. `TestML1AIE` keeps pointing at the uncorrected file and keeps
+asserting exactly one undefined name; do not point it at the corrected one.
 
 ## Opcodes are the spine
 
@@ -252,23 +306,27 @@ runs LOWLTEST L4A from `.downloads/lowltest/ltestl4a.lwl`. That file cannot be c
 test **skips** when it is absent — `go run ./cmd/fetchtestdata -corpus lowltest` turns it on. If you
 touch opcode execution, make sure this one ran rather than skipped.
 
-## Two front ends
+## Three front ends
 
 `cmd/ml1` implements Appendix AA — single letter options, options and input files interleaved, the
 engine found on disk — and is **not free to be improved**: being a drop-in for the reference
 implementation is the whole of what it is for. `cmd/maclo` has no such obligation, takes ordinary Go
-flags, and runs an engine compiled into the binary. Anything better goes in maclo. Both are thin
-wrappers over `ml1.Run`, and behaviour added to either rather than to `pkg/ml1` is behaviour nothing
-tests.
+flags, and runs an engine compiled into the binary. Anything better goes in maclo. `cmd/macl run` is
+the third: it takes an L source rather than an engine and translates it on the way in. All three are
+thin wrappers over `ml1.Run`, and behaviour added to any of them rather than to `pkg/ml1` is
+behaviour nothing tests.
 
 ## Where the engine comes from
 
-Two answers, and `Job` has a field for each. `LOWLSource` is a path and `Engine` is the name of a
-source built into the binary; `LOWLSource` wins if both are set, and with **neither** set `Run`
-searches the file system and *does not consult the embedded engines at all*. That last rule is what
+Three answers now, and `Job` has a field for each. `LSource` is the odd one: it names L rather than
+LOWL, so it selects the back end rather than a file to read, and `Run` answers it before the other
+two. The rest of this section is about the other two.
+
+`LOWLSource` is a path and `Engine` is the name of a source built into the binary; `LOWLSource`
+wins if both are set, and with **neither** set `Run` searches the file system and *does not consult the embedded engines at all*. That last rule is what
 keeps cmd/ml1 behaving the way its operating instructions say whatever the binary was built with,
 and `TestEmbeddedIsNotConsultedByDefault` is what stops it drifting. maclo fills `Engine` in;
-ml1 leaves both empty.
+ml1 leaves both empty; macl fills `LSource` in.
 
 `pkg/ml1/embed.go` holds the embedding. `//go:embed engines` points at `pkg/ml1/engines/`, whose
 `.gitignore` denies everything and allows back only itself and a `README.md` — the licence permits

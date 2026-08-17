@@ -59,3 +59,11 @@ var (
 // golden harness skips on this, so a clone that has not fetched the archives
 // says so plainly instead of failing every case.
 var ErrNoEngineSource = errors.New("ml1: cannot read the LOWL source of ML/I")
+
+// ErrLSourceErrors means the L source of ML/I did not resolve, or did not map.
+//
+// It is separate from ErrNoEngineSource because the file was found and read:
+// what failed is the translation, and the diagnostics that say why are wrapped
+// into the error rather than written anywhere, because pkg/ml1 writes to the
+// streams its Job names and to nothing else.
+var ErrLSourceErrors = errors.New("ml1: the L source of ML/I does not translate")
